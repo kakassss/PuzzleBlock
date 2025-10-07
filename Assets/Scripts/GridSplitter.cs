@@ -1,130 +1,175 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
-
-public class TriangleCell
-{
-    public int id;
-    public Vector3[] vertices;
-    public List<TriangleCell> neighbors = new List<TriangleCell>();
-    public bool visited;
-
-    public TriangleCell(int id, Vector3[] verts)
-    {
-        this.id = id;
-        this.vertices = verts;
-    }
-}
 
 public class GridSplitter : MonoBehaviour
 {
-    [SerializeField] private int gridSize = 4; // 4x4, 5x5, 6x6
+    [SerializeField] private int gridSize = 4;
     [SerializeField] private Material material;
     [SerializeField] private int _pieceCount = 7;
+    [SerializeField] private PieceView _piecePrefab;
     
-    private List<TriangleCell> allTriangles = new List<TriangleCell>();
-    private List<List<TriangleCell>> pieces = new List<List<TriangleCell>>();
+    private List<TriangleCell> _allTriangles = new List<TriangleCell>();
+    private List<Piece> _pieces = new List<Piece>();
+    private List<Vector3> _snapPoints = new List<Vector3>();
 
-    void Start()
+    private IInstantiator _instantiator;
+
+    [Inject]
+    private void Construct(IInstantiator instantiator)
+    {
+        _instantiator = instantiator;    
+    }
+    
+    private void Start()
     {
         GenerateGrid();
-        BuildNeighbors();
-
+        CollectSnapPoints();
+        FindNeighborTriangles();
         CreatePieces(_pieceCount);
-
         DrawPieces();
     }
-
-    void GenerateGrid()
+    
+    private void GenerateGrid()
     {
-        float cellSize = 1f;
-        int idCounter = 0;
-
         for (int y = 0; y < gridSize; y++)
         {
             for (int x = 0; x < gridSize; x++)
             {
-                Vector3 bottomLeft = new Vector3(x, y, 0);                
-                Vector3 bottomRight = new Vector3(x + 1, y, 0);             
                 Vector3 topLeft = new Vector3(x, y + 1, 0);             
                 Vector3 topRight = new Vector3(x + 1, y + 1, 0);     
+                Vector3 bottomLeft = new Vector3(x, y, 0);                
+                Vector3 bottomRight = new Vector3(x + 1, y, 0);             
                 Vector3 center = (bottomLeft + bottomRight + topLeft + topRight) / 4f;
-
-                allTriangles.Add(new TriangleCell(idCounter++, new Vector3[] { bottomLeft, center, bottomRight }));
-                allTriangles.Add(new TriangleCell(idCounter++, new Vector3[] { bottomRight, center, topRight }));
-                allTriangles.Add(new TriangleCell(idCounter++, new Vector3[] { topRight, center, topLeft }));
-                allTriangles.Add(new TriangleCell(idCounter++, new Vector3[] { topLeft, center, bottomLeft }));
+                
+                var topTriangle = new TriangleCell(new Vector3[] { topRight, center, topLeft }, false, new Vector2(x, y));
+                var bottomTriangle = new TriangleCell( new Vector3[] { bottomLeft, center, bottomRight }, false, new Vector2(x, y));
+                var leftTriangle = new TriangleCell(new Vector3[] { topLeft, center, bottomLeft }, false, new Vector2(x, y));
+                var rightTriangle = new TriangleCell(new Vector3[] { bottomRight, center, topRight },false,new Vector2(x,y));
+                
+                _allTriangles.Add(topTriangle);
+                _allTriangles.Add(bottomTriangle);
+                _allTriangles.Add(leftTriangle);
+                _allTriangles.Add(rightTriangle);
             }
         }
     }
+    
+    private void CollectSnapPoints()
+    {
+        HashSet<Vector3> uniquePoints = new HashSet<Vector3>();
+        
+        foreach (var triangle in _allTriangles)
+        {
+            Vector3 headVertex = triangle.Vertices[0];
+            uniquePoints.Add(headVertex);
+        }
+        
+        _snapPoints.AddRange(uniquePoints);
+    }
 
-    void BuildNeighbors()
+    private void FindNeighborTriangles()
     {
         float epsilon = 0.01f;
 
-        foreach (var a in allTriangles)
+        foreach (var triangleX in _allTriangles)
         {
-            foreach (var b in allTriangles)
+            foreach (var triangleY in _allTriangles)
             {
-                if (a == b) continue;
-
-                int shared = 0;
-                foreach (var va in a.vertices)
+                if (triangleX == triangleY) continue;   
+                
+                int sharedVertices = 0;
+                
+                foreach (var va in triangleX.Vertices)
                 {
-                    foreach (var vb in b.vertices)
+                    foreach (var vb in triangleY.Vertices)
                     {
                         if (Vector3.Distance(va, vb) < epsilon)
-                            shared++;
+                            sharedVertices++;
                     }
                 }
 
-                if (shared >= 2)
+                if (sharedVertices == 2)
                 {
-                    if (!a.neighbors.Contains(b))
-                        a.neighbors.Add(b);
+                    if (!triangleX.Neighbors.Contains(triangleY))
+                        triangleX.Neighbors.Add(triangleY);
                 }
             }
         }
     }
 
-    void CreatePieces(int targetCount)
+    private void CreatePieces(int targetCount)
     {
-        foreach (var tri in allTriangles)
-            tri.visited = false;
-
-        foreach (var tri in allTriangles)
+        int pieceIdCounter = 0;
+        
+        foreach (var tri in _allTriangles)
         {
-            if (!tri.visited)
+            if (!tri.Visited)
             {
-                List<TriangleCell> newPiece = new List<TriangleCell>();
+                Piece newPiece = new Piece(pieceIdCounter++);
                 GrowRegion(tri, newPiece);
-                pieces.Add(newPiece);
+                _pieces.Add(newPiece);
             }
         }
 
-        while (pieces.Count > targetCount)
+        MergePiecesToTargetCount(targetCount);
+    }
+
+    private void MergePiecesToTargetCount(int targetCount)
+    {
+        while (_pieces.Count > targetCount)
         {
-            pieces[0].AddRange(pieces[1]);
-            pieces.RemoveAt(1);
+            int smallestIndex = 0;
+            for (int i = 1; i < _pieces.Count; i++)
+            {
+                if (_pieces[i].TriangleCount < _pieces[smallestIndex].TriangleCount)
+                    smallestIndex = i;
+            }
+            
+            int neighborPieceIndex = FindNeighborPiece(smallestIndex);
+            if (neighborPieceIndex == -1)
+            {
+                neighborPieceIndex = (smallestIndex + 1) % _pieces.Count;
+            }
+            
+            var smallestPiece = _pieces[smallestIndex];
+            _pieces[neighborPieceIndex].AddTriangles(smallestPiece.Triangles);
+            _pieces.RemoveAt(smallestIndex);
         }
     }
 
-    void GrowRegion(TriangleCell start, List<TriangleCell> piece)
+    private int FindNeighborPiece(int smallestPieceIndex)
+    {
+        Piece smallestPiece = _pieces[smallestPieceIndex];
+        
+        for (int i = 0; i < _pieces.Count; i++)
+        {
+            if (i == smallestPieceIndex) continue;
+            
+            if (smallestPiece.IsNeighborWith(_pieces[i]))
+                return i;
+        }
+        
+        return -1; 
+    }
+
+    void GrowRegion(TriangleCell start, Piece piece)
     {
         Queue<TriangleCell> queue = new Queue<TriangleCell>();
         queue.Enqueue(start);
-        start.visited = true;
+        start.Visited = true;
 
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            piece.Add(current);
+            piece.AddTriangle(current);
 
-            foreach (var n in current.neighbors)
+            foreach (var n in current.Neighbors)
             {
-                if (!n.visited && Random.value > 0.6f)
+                if (!n.Visited && Random.value > 0.6f)
                 {
-                    n.visited = true;
+                    n.Visited = true;
                     queue.Enqueue(n);
                 }
             }
@@ -133,38 +178,35 @@ public class GridSplitter : MonoBehaviour
 
     void DrawPieces()
     {
-        int colorIndex = 0;
-
-        foreach (var piece in pieces)
+        for (int i = 0; i < _pieces.Count; i++)
         {
-            Mesh mesh = new Mesh();
-            List<Vector3> verts = new List<Vector3>();
-            List<int> tris = new List<int>();
-
-            foreach (var tri in piece)
-            {
-                int startIndex = verts.Count;
-                verts.AddRange(tri.vertices);
-                tris.Add(startIndex);
-                tris.Add(startIndex + 1);
-                tris.Add(startIndex + 2);
-            }
-
-            mesh.SetVertices(verts);
-            mesh.SetTriangles(tris, 0);
-
-            GameObject go = new GameObject("Piece_" + colorIndex);
-            go.transform.SetParent(this.transform);
-
-            var mf = go.AddComponent<MeshFilter>();
-            var mr = go.AddComponent<MeshRenderer>();
-            mf.mesh = mesh;
-
-            Material mat = new Material(material);
-            mat.color = Random.ColorHSV();
-            mr.material = mat;
-
-            colorIndex++;
+            Piece piece = _pieces[i];
+            Mesh mesh = piece.CreateMesh();
+            
+            var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_piecePrefab, transform);
+            pieceGo.name = "Piece_" + piece.ID;
+            mesh.name = "Piece_" + piece.ID + "_Mesh";
+            
+            pieceGo.SetTriangles(piece.Triangles);
+            pieceGo.CalculatePieceCenter();
+            pieceGo.SetPiece(mesh);
+            pieceGo.SetSnapPoints(_snapPoints);
+            
+            float randomX = Random.Range(0, gridSize);
+            float randomY = Random.Range(-4, -5);
+            
+            pieceGo.transform.position = new Vector3(randomX, randomY, 0);
+        }
+    }
+    
+    void OnDrawGizmos()
+    {
+        if (_snapPoints == null || _snapPoints.Count == 0) return;
+        
+        Gizmos.color = Color.red;
+        foreach (var point in _snapPoints)
+        {
+            Gizmos.DrawWireSphere(point, 0.15f);
         }
     }
 }
