@@ -2,14 +2,14 @@
 public class GameInitializer : IGameInitializer
 {
     private readonly IGridController _gridController;
-    private readonly ICameraController _cameraController;
+    private readonly ICameraSizeController _ıCameraSizeController;
     
     public GameInitializer(
         IGridController gridController,
-        ICameraController cameraController)
+        ICameraSizeController ıCameraSizeController)
     {
         _gridController = gridController;
-        _cameraController = cameraController;
+        _ıCameraSizeController = ıCameraSizeController;
         
         Initialize();
     }
@@ -22,6 +22,6 @@ public class GameInitializer : IGameInitializer
     private void SetupGame()
     {
         int gridSize = _gridController.GetGridSize();
-        _cameraController.SetCameraSize(gridSize);
+        _ıCameraSizeController.SetCameraSize(gridSize);
     }
 }

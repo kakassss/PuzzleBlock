@@ -23,7 +23,7 @@ public class GamePlayInstaller : MonoInstaller
         Container.BindInterfacesTo<PieceSpawnPositionController>().AsSingle().NonLazy();
         
         Container.BindInterfacesTo<LevelPersistenceService>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<CameraController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<ICameraSizeSizeController>().AsSingle().NonLazy();
         
         Container.BindInterfacesTo<GameInitializer>().AsSingle().NonLazy();
     }

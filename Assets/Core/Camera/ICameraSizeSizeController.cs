@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CameraController : ICameraController
+public class ICameraSizeSizeController : ICameraSizeController
 {
     private readonly ICameraService _cameraService;
     
@@ -8,7 +8,7 @@ public class CameraController : ICameraController
     private float _verticalOffset = 6.75f;
     private float _orthographicSize = 8f;
 
-    public CameraController(ICameraService cameraService)
+    public ICameraSizeSizeController(ICameraService cameraService)
     {
         _cameraService = cameraService;
     }
