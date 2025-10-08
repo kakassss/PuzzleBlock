@@ -12,4 +12,5 @@ public interface IGridController
     public GridCell GetValue(Vector3 worldPositon);
     public List<Vector3> GetGridVisualPositions();
     public List<Vector3> GetCenterPositions();
+    public bool InBounds(int x, int y);
 }

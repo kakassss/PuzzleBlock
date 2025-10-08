@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
+
 
 public class Grid : IGridController
 {
@@ -66,6 +66,11 @@ public class Grid : IGridController
     {
         x = Mathf.FloorToInt(worldPosition.x / _cellSize);
         y = Mathf.FloorToInt(worldPosition.y / _cellSize);
+    }
+
+    public bool InBounds(int x, int y)
+    {
+        return (x >= 0 && y >= 0 && x < _gridSize && y < _gridSize);
     }
     
     public void SetValue(Vector3 worldPositon, GridCell value)

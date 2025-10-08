@@ -13,22 +13,104 @@ public class GridSplitter : MonoBehaviour
     private List<TriangleCell> _allTriangles = new List<TriangleCell>();
     private List<Piece> _pieces = new List<Piece>();
     private List<Vector3> _snapPoints = new List<Vector3>();
+    private List<PieceView> _spawnedPieces = new List<PieceView>();
 
     private IInstantiator _instantiator;
-
+    private IPieceSpawnPositionService _pieceSpawnPositionService;
+    
     [Inject]
-    private void Construct(IInstantiator instantiator)
+    private void Construct(IInstantiator instantiator, IPieceSpawnPositionService pieceSpawnPositionService)
     {
         _instantiator = instantiator;    
+        _pieceSpawnPositionService = pieceSpawnPositionService;
     }
     
     private void Start()
+    {
+        GenerateNewLevel();
+    }
+    
+    public int GetGridSize() => gridSize;
+    public List<Vector3> GetSnapPoints() => _snapPoints;
+    public List<Piece> GetPieces() => _pieces;
+    public List<PieceView> GetSpawnedPieces() => _spawnedPieces;
+    
+    public void GenerateNewLevel()
     {
         GenerateGrid();
         CollectSnapPoints();
         FindNeighborTriangles();
         CreatePieces(_pieceCount);
         DrawPieces();
+    }
+    
+    public void LoadFromLevelData(LevelData levelData)
+    {
+        gridSize = levelData.gridSize;
+        _snapPoints = new List<Vector3>(levelData.snapPoints);
+        
+        _allTriangles.Clear();
+        _pieces.Clear();
+        
+        foreach (var pieceData in levelData.pieces)
+        {
+            Piece piece = new Piece(pieceData.pieceId);
+            
+            foreach (var triData in pieceData.triangles)
+            {
+                TriangleCell triangle = new TriangleCell(triData.vertices, false, triData.cell);
+                piece.AddTriangle(triangle);
+                _allTriangles.Add(triangle);
+            }
+            
+            _pieces.Add(piece);
+        }
+        FindNeighborTriangles();
+        DrawLoadedPieces(levelData);
+    }
+    
+    public void ClearLevel()
+    {
+        foreach (var piece in _spawnedPieces)
+        {
+            if (piece != null)
+            {
+                Destroy(piece.gameObject);
+            }
+        }
+        
+        _spawnedPieces.Clear();
+        _allTriangles.Clear();
+        _pieces.Clear();
+        _snapPoints.Clear();
+    }
+    
+    private void DrawLoadedPieces(LevelData levelData)
+    {
+        for (int i = 0; i < _pieces.Count; i++)
+        {
+            Piece piece = _pieces[i];
+            Mesh mesh = piece.CreateMesh();
+            
+            var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_piecePrefab, transform);
+            pieceGo.name = "Piece_" + piece.ID;
+            mesh.name = "Piece_" + piece.ID + "_Mesh";
+            
+            pieceGo.SetPiece(piece.Triangles,_snapPoints);
+            pieceGo.SetMesh(mesh);
+
+            PieceData pieceData = levelData.pieces.Find(p => p.pieceId == piece.ID);
+            if (pieceData != null)
+            {
+                pieceGo.transform.position = pieceData.startPosition;
+            }
+            else
+            {
+                pieceGo.transform.position = _pieceSpawnPositionService.GetSpawnPosition();
+            }
+            
+            _spawnedPieces.Add(pieceGo);
+        }
     }
     
     private void GenerateGrid()
@@ -75,6 +157,8 @@ public class GridSplitter : MonoBehaviour
 
         foreach (var triangleX in _allTriangles)
         {
+            triangleX.Neighbors.Clear();
+            
             foreach (var triangleY in _allTriangles)
             {
                 if (triangleX == triangleY) continue;   
@@ -102,6 +186,11 @@ public class GridSplitter : MonoBehaviour
     private void CreatePieces(int targetCount)
     {
         int pieceIdCounter = 0;
+        
+        foreach (var tri in _allTriangles)
+        {
+            tri.Visited = false;
+        }
         
         foreach (var tri in _allTriangles)
         {
@@ -187,15 +276,14 @@ public class GridSplitter : MonoBehaviour
             pieceGo.name = "Piece_" + piece.ID;
             mesh.name = "Piece_" + piece.ID + "_Mesh";
             
-            pieceGo.SetTriangles(piece.Triangles);
-            pieceGo.CalculatePieceCenter();
-            pieceGo.SetPiece(mesh);
-            pieceGo.SetSnapPoints(_snapPoints);
+            pieceGo.SetPiece(piece.Triangles,_snapPoints);
+            pieceGo.SetMesh(mesh);
             
             float randomX = Random.Range(0, gridSize);
             float randomY = Random.Range(-4, -5);
             
             pieceGo.transform.position = new Vector3(randomX, randomY, 0);
+            _spawnedPieces.Add(pieceGo);
         }
     }
     
