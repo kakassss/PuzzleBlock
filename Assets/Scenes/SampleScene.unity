@@ -197,7 +197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 330585545}
-  GridSize: 4
+  GridSize: 5
   gridCellSize: 1
 --- !u!1 &330585543
 GameObject:
@@ -261,7 +261,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8.01
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -516,7 +516,7 @@ GameObject:
   - component: {fileID: 505786328}
   - component: {fileID: 505786326}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: LevelController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -643,7 +643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fff23dbe2e689f946a3dc482efa82ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 4
+  gridSize: 5
   material: {fileID: 2100000, guid: b27d3fd8ff1d52c4db5ad45f12515f66, type: 2}
   _pieceCount: 7
   _piecePrefab: {fileID: 595500600426024086, guid: 4c4cf47f226ab194a9292e095861d7ca, type: 3}

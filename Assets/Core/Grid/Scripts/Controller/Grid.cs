@@ -6,11 +6,11 @@ public class Grid : IGridController
 {
     private const int GRID_SIZE_OFFSET = 1;
     
-    private int _gridSize;
-    private float _cellSize;
-    private GridCell[,] _gridArray;
-    private List<Vector3> _cellVisualPosition;
-    private List<Vector3> _centerPos;
+    private readonly int _gridSize;
+    private readonly float _cellSize;
+    private readonly GridCell[,] _gridArray;
+    private readonly List<Vector3> _cellVisualPosition;
+    private readonly List<Vector3> _centerPos;
     
     public Grid(int gridSize, float cellSize)
     {
