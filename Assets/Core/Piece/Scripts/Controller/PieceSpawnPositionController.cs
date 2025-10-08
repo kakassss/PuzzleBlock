@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PieceSpawnPositionController : IPieceSpawnPositionController
 {
-    private IGridController _gridController;
+    private readonly IGridController _gridController;
 
     public PieceSpawnPositionController(IGridController gridController)
     {

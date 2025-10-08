@@ -7,7 +7,7 @@ public class PiecePlacementController : IPiecePlacementController
     private Dictionary<TriangleCell, GridCell> _triangleToCell = new Dictionary<TriangleCell, GridCell>();
     private Vector3 _centerPosition;
     
-    private IGridController _gridController;
+    private readonly IGridController _gridController;
 
     public PiecePlacementController(IGridController gridController)
     {

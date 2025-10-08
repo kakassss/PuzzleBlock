@@ -2,7 +2,7 @@
 
 public class CameraService : ICameraService
 {
-    private Camera _camera;
+    private readonly Camera _camera;
 
     public CameraService(Camera camera)
     {
@@ -13,5 +13,4 @@ public class CameraService : ICameraService
     {
         return _camera;
     }
-    
 }

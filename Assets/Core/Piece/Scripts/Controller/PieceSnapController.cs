@@ -7,7 +7,7 @@ public class PieceSnapController : IPieceSnapController
     private List<TriangleCell> _allTriangles = new List<TriangleCell>();
     private Vector3 _centerPoint;
     
-    private IPieceMouseInputHandler _pieceMouseInputHandler;
+    private readonly IPieceMouseInputHandler _pieceMouseInputHandler;
 
     public PieceSnapController(IPieceMouseInputHandler pieceMouseInputHandler)
     {

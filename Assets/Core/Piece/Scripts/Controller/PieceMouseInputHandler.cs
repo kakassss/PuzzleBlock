@@ -5,8 +5,8 @@ public class PieceMouseInputHandler : IPieceMouseInputHandler
     private Vector3 _dragOffset;
     private Vector3 _originalPosition;
 
-    private ICameraService _cameraService;
-    private IGridController _gridController;
+    private readonly ICameraService _cameraService;
+    private readonly IGridController _gridController;
 
     public PieceMouseInputHandler(IGridController gridController, ICameraService cameraService)
     {
