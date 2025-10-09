@@ -3,6 +3,7 @@ using UnityEngine;
 
 public interface IGridController
 {
+    public List<TriangleCell> GetAllTriangleCells();
     public Vector3 GetWorldPosition(int x, int y);
     public void SetValue(int x, int y, GridCell value);
     public void GetXY(Vector3 worldPosition, out int x, out int y);

@@ -4,17 +4,24 @@ using Zenject;
 
 public class LevelController : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private GridSplitter _gridSplitter;
-    
     private IPieceSpawnPositionController _pieceSpawnPositionController;
     private ILevelPersistenceService _levelPersistenceService;
-
+    private IGridController _gridController;
+    private IPieceLoader _pieceLoader;
+    private IPieceBuilder _pieceBuilder;
+    private IPieceSaverService _pieceSaverService;
+    
     [Inject]
-    private void Construct(IPieceSpawnPositionController pieceSpawnPositionService, ILevelPersistenceService levelPersistenceService)
+    private void Construct(IPieceSpawnPositionController pieceSpawnPositionService, ILevelPersistenceService levelPersistenceService,
+        IGridController gridController, IPieceFactory pieceFactory, IPieceLoader pieceLoader,
+        IPieceBuilder pieceBuilder, IPieceSaverService ıPieceSaverService)
     {
         _pieceSpawnPositionController = pieceSpawnPositionService;
         _levelPersistenceService = levelPersistenceService;
+        _gridController = gridController;
+        _pieceLoader = pieceLoader;
+        _pieceBuilder = pieceBuilder;
+        _pieceSaverService = ıPieceSaverService;
     }
     
     private void Update()
@@ -48,12 +55,12 @@ public class LevelController : MonoBehaviour
     {
         LevelData levelData = new LevelData
         {
-            gridSize = _gridSplitter.GetGridSize(),
-            snapPoints = new List<Vector3>(_gridSplitter.GetSnapPoints())
+            gridSize = _gridController.GetGridSize(),
+            snapPoints = new List<Vector3>(_pieceSaverService.GetSnapPoints())
         };
         
-        var pieces = _gridSplitter.GetPieces();
-        var spawnedPieces = _gridSplitter.GetSpawnedPieces();
+        var pieces = _pieceSaverService.GetPieces();
+        var spawnedPieces = _pieceSaverService.GetSpawnedPieces();
         
         foreach (var piece in pieces)
         {
@@ -94,15 +101,17 @@ public class LevelController : MonoBehaviour
             return;
         }
         
-        _gridSplitter.ClearLevel();
-        _gridSplitter.LoadFromLevelData(levelData);
+        _pieceBuilder.Clear();
+        _pieceLoader.Clear();
+        _pieceLoader.LoadFromLevelData(levelData);
         
         _levelPersistenceService.SaveLastPlayedLevel(levelName);
     }
     
     private void GenerateNewLevel()
     {
-        _gridSplitter.ClearLevel();
-        _gridSplitter.GenerateNewLevel();
+        _pieceBuilder.Clear();
+        _pieceLoader.Clear();
+        _pieceBuilder.GenerateNewPiece();
     }
 }

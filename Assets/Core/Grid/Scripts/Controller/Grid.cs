@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Grid : IGridController
 {
+    public List<TriangleCell> GetAllTriangleCells() => _allTriangles;
+
+    
     private const int GRID_SIZE_OFFSET = 1;
     
     private readonly int _gridSize;
@@ -11,6 +14,7 @@ public class Grid : IGridController
     private readonly GridCell[,] _gridArray;
     private readonly List<Vector3> _cellVisualPosition;
     private readonly List<Vector3> _centerPos;
+    private readonly List<TriangleCell> _allTriangles = new List<TriangleCell>();
     
     public Grid(int gridSize, float cellSize)
     {
@@ -34,16 +38,9 @@ public class Grid : IGridController
             {
                 Debug.DrawLine(GetWorldPosition(x,y), GetWorldPosition(x, y + 1), Color.green,100f);
                 Debug.DrawLine(GetWorldPosition(x,y), GetWorldPosition(x+1, y), Color.green,100f);
-                
-                Vector3 topLeft = new Vector3(x, y + 1, 0);             
-                Vector3 topRight = new Vector3(x + 1, y + 1, 0);     
-                Vector3 bottomLeft = new Vector3(x, y, 0);                
-                Vector3 bottomRight = new Vector3(x + 1, y, 0);             
-                Vector3 center = (bottomLeft + bottomRight + topLeft + topRight) / 4f;
-                
                 _gridArray[x, y] = new GridCell(new Vector3(x,y));
                 
-                _centerPos.Add(center);
+                GenerateTriangles(x,y);
             }
         }
         
@@ -51,6 +48,28 @@ public class Grid : IGridController
         Debug.DrawLine(GetWorldPosition(_gridSize,0), GetWorldPosition(_gridSize, _gridSize), Color.green,100f);
     }
 
+    private void GenerateTriangles(int x, int y)
+    {
+        Vector3 topLeft = new Vector3(x, y + 1, 0);             
+        Vector3 topRight = new Vector3(x + 1, y + 1, 0);     
+        Vector3 bottomLeft = new Vector3(x, y, 0);                
+        Vector3 bottomRight = new Vector3(x + 1, y, 0);             
+        Vector3 center = (bottomLeft + bottomRight + topLeft + topRight) / 4f;
+                
+        var topTriangle = new TriangleCell(new Vector3[] { topRight, center, topLeft }, false, new Vector2(x, y));
+        var bottomTriangle = new TriangleCell( new Vector3[] { bottomLeft, center, bottomRight }, false, new Vector2(x, y));
+        var leftTriangle = new TriangleCell(new Vector3[] { topLeft, center, bottomLeft }, false, new Vector2(x, y));
+        var rightTriangle = new TriangleCell(new Vector3[] { bottomRight, center, topRight },false,new Vector2(x,y));
+                
+        _allTriangles.Add(topTriangle);
+        _allTriangles.Add(bottomTriangle);
+        _allTriangles.Add(leftTriangle);
+        _allTriangles.Add(rightTriangle);
+        _centerPos.Add(center);
+    }
+    
+    #region Public Fiedls
+    
     public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x,y) * _cellSize;
@@ -109,4 +128,6 @@ public class Grid : IGridController
     {
         return _centerPos;
     }
+    
+    #endregion
 }
