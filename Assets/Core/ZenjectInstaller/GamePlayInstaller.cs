@@ -22,7 +22,7 @@ public class GamePlayInstaller : MonoInstaller
     
     private void BindControllers()
     {
-        Container.BindInterfacesTo<Grid>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<GridController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CameraService>().AsSingle().WithArguments(_mainCamera).NonLazy();
         Container.BindInterfacesTo<PieceZOrderController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<PieceMouseInputHandler>().AsSingle().NonLazy();

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-
-public class Grid : IGridController
+public class GridController : IGridController
 {
     public List<TriangleCell> GetAllTriangleCells() => _allTriangles;
     
@@ -17,7 +16,7 @@ public class Grid : IGridController
     
     private IGameDifficultyController _gameDifficultyController;
     
-    public Grid(IGameDifficultyController gameDifficultyController)
+    public GridController(IGameDifficultyController gameDifficultyController)
     {
         _gameDifficultyController = gameDifficultyController;
         var gameDifficulty = _gameDifficultyController.GetDifficultyData();
