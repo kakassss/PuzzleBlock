@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Camera;
+using Core.Camera.Scripts.Controller;
 using Core.Grid.Scripts.Controller;
 using Core.Level.Controller;
 using Core.Piece.Scripts.Controller;
@@ -41,13 +42,13 @@ namespace Core.ZenjectInstaller
             Container.BindInterfacesTo<CameraService>().AsSingle().WithArguments(_mainCamera).NonLazy();
             Container.BindInterfacesTo<CameraSizeController>().AsSingle().NonLazy();
             Container.BindInterfacesTo<LevelCompletionController>().AsSingle().NonLazy();
-            Container.BindInterfacesTo<GameInitializer.GameInitializer>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<GameInitializer.Scripts.Controller.GameInitializer>().AsSingle().NonLazy();
             //Piece Containers
             Container.BindInterfacesTo<PieceMouseInputHandler>().AsSingle().NonLazy();
             Container.BindInterfacesTo<PieceSpawnPositionController>().AsSingle().NonLazy();
             Container.BindInterfacesTo<PieceZOrderController>().AsSingle().NonLazy();
             Container.BindInterfacesTo<PieceSaverService>().AsSingle().NonLazy();
-            Container.BindInterfacesTo<TriangleNeighborService>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<PieceTriangleNeighborService>().AsSingle().NonLazy();
             Container.BindInterfacesTo<PieceLoader>().AsSingle().WithArguments(_pieceViewPrefab,_pieceParent).NonLazy();
             Container.BindInterfacesTo<PieceFactory>().AsTransient().NonLazy();
             Container.BindInterfacesTo<PieceBuilder>().AsSingle().WithArguments(_pieceViewPrefab,_pieceParent).NonLazy();

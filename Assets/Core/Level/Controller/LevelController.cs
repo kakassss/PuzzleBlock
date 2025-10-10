@@ -45,8 +45,7 @@ namespace Core.Level.Controller
             };
         
             var pieces = _pieceSaverService.GetPieces();
-            var spawnedPieces = _pieceSaverService.GetSpawnedPieces();
-        
+            
             foreach (var piece in pieces)
             {
                 PieceData pieceData = new PieceData
@@ -59,16 +58,7 @@ namespace Core.Level.Controller
                     TriangleData triData = new TriangleData(triangle.Vertices, triangle.Cell);
                     pieceData.triangles.Add(triData);
                 }
-            
-                foreach (var spawnedPiece in spawnedPieces)
-                {
-                    if (spawnedPiece.name == "Piece_" + piece.ID)
-                    {
-                        pieceData.startPosition = _pieceSpawnPositionController.GetSpawnPosition();
-                        break;
-                    }
-                }
-            
+                
                 levelData.Pieces.Add(pieceData);
             }
         

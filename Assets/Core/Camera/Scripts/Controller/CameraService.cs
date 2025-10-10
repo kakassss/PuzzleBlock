@@ -1,4 +1,4 @@
-﻿namespace Core.Camera
+﻿namespace Core.Camera.Scripts.Controller
 {
     public class CameraService : ICameraService
     {

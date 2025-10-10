@@ -1,4 +1,4 @@
-namespace Core.GameInitializer
+namespace Core.GameInitializer.Scripts.Controller
 {
     public interface IGameInitializer
     {

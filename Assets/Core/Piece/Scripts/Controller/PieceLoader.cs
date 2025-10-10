@@ -17,13 +17,13 @@ namespace Core.Piece.Scripts.Controller
         private Transform _parentTransform;
         private PieceView _pieceViewPrefab;
     
-        private ITriangleNeighborService _triangleNeighborService;
+        private IPieceTriangleNeighborService _ıPieceTriangleNeighborService;
         private IPieceDrawer _pieceDrawer;
 
-        public PieceLoader(PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService,
+        public PieceLoader(PieceView pieceViewPrefab,Transform parentTransform,IPieceTriangleNeighborService ıPieceTriangleNeighborService,
              IPieceDrawer pieceDrawer)
         {
-            _triangleNeighborService = triangleNeighborService;
+            _ıPieceTriangleNeighborService = ıPieceTriangleNeighborService;
             _pieceDrawer = pieceDrawer;
         
             _parentTransform = parentTransform;
@@ -49,7 +49,7 @@ namespace Core.Piece.Scripts.Controller
                 _pieces.Add(piece);
             }
         
-            _triangleNeighborService.FindNeighbors(_allTriangles);
+            _ıPieceTriangleNeighborService.FindNeighbors(_allTriangles);
             DrawLoadedPieces();
         }
         

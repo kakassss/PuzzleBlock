@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Core.Piece.Scripts.Controller
 {
-    public class TriangleNeighborService : ITriangleNeighborService
+    public class PieceTriangleNeighborService : IPieceTriangleNeighborService
     {
         private float _epsilon = 0.01f;
     

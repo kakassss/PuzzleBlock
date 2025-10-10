@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Camera
+namespace Core.Camera.Scripts.Controller
 {
     public class CameraSizeController : ICameraSizeController
     {

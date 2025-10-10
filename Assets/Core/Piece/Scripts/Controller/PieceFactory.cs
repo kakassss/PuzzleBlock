@@ -18,16 +18,16 @@ namespace Core.Piece.Scripts.Controller
         private List<Vector3> _snapPoints = new List<Vector3>();
     
         private IGridController _gridController;
-        private ITriangleNeighborService _triangleNeighborService;
+        private IPieceTriangleNeighborService _ıPieceTriangleNeighborService;
         private IGameDifficultyController _gameDifficultyController;
     
         private int _pieceCount;
     
-        public PieceFactory(IGridController gridController,ITriangleNeighborService triangleNeighborService,
+        public PieceFactory(IGridController gridController,IPieceTriangleNeighborService ıPieceTriangleNeighborService,
             IGameDifficultyController gameDifficultyController)
         {
             _gridController = gridController;
-            _triangleNeighborService = triangleNeighborService;
+            _ıPieceTriangleNeighborService = ıPieceTriangleNeighborService;
             _gameDifficultyController = gameDifficultyController;
         
             var gameDifficulty = _gameDifficultyController.GetDifficultyData();
@@ -119,7 +119,7 @@ namespace Core.Piece.Scripts.Controller
     
         private void FindNeighborTriangles()
         {
-            _triangleNeighborService.FindNeighbors(_allTriangles);
+            _ıPieceTriangleNeighborService.FindNeighbors(_allTriangles);
         }
     
         private void GrowRegion(TriangleCell start, Data.Piece piece)

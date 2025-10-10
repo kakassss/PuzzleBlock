@@ -9,7 +9,8 @@ namespace Core.Piece.Scripts.Data
     {
         public int pieceId;
         public List<TriangleData> triangles;
-        public Vector3 startPosition;
+        // Kullanımı kaldırıldı fakat dökümantasyonda oldugundan dolayı silinmedi.
+        public Vector3 startPosition;  
     
         public PieceData()
         {

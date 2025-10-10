@@ -1,9 +1,9 @@
 using Core.Camera;
+using Core.Camera.Scripts.Controller;
 using Core.Grid.Scripts.Controller;
-using Core.Level;
 using Core.Level.Controller;
 
-namespace Core.GameInitializer
+namespace Core.GameInitializer.Scripts.Controller
 {
     public class GameInitializer : IGameInitializer
     {
