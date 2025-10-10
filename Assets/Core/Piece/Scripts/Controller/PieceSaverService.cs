@@ -8,10 +8,10 @@ namespace Core.Piece.Scripts.Controller
     public class PieceSaverService : IPieceSaverService
     {
         private List<PieceView> _spawnedPieces = new List<PieceView>();
-        private List<global::Core.Piece.Scripts.Data.Piece> _pieces = new List<global::Core.Piece.Scripts.Data.Piece>();
+        private List<global::Core.Piece.Scripts.Data.Piece> _pieces = new List<Data.Piece>();
         private List<Vector3> _snapPoints = new List<Vector3>();
     
-        public void SavePieceData(List<PieceView> spawnedPieces, List<global::Core.Piece.Scripts.Data.Piece> pieces,List<Vector3> snapPoints)
+        public void SavePieceData(List<PieceView> spawnedPieces, List<Data.Piece> pieces,List<Vector3> snapPoints)
         {
             _spawnedPieces = spawnedPieces;
             _pieces = pieces;
@@ -19,7 +19,7 @@ namespace Core.Piece.Scripts.Controller
         }
     
         public List<PieceView> GetSpawnedPieces() => _spawnedPieces;
-        public List<global::Core.Piece.Scripts.Data.Piece> GetPieces() => _pieces;
+        public List<Data.Piece> GetPieces() => _pieces;
         public List<Vector3> GetSnapPoints() => _snapPoints;
 
         public void Clear()

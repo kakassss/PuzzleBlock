@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
 using Core.Piece.Scripts.Data;
-using UnityEngine;
 
 namespace Core.Grid.Scripts.Data
 {
     public class GridCell
     {
         private List<TriangleCell> _triangles = new List<TriangleCell>();
-    
-        public GridCell(Vector3 cell)
-        {
-        }
-    
+        
+        
         public bool CanPlace(TriangleCell triangle)
         {
             return _triangles.Count < 4 && !_triangles.Contains(triangle);

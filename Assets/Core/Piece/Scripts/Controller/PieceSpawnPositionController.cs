@@ -19,7 +19,7 @@ namespace Core.Piece.Scripts.Controller
             Sequence sequence = DOTween.Sequence();
             sequence.SetAutoKill(true);
         
-            float randomX = Random.Range(-1f,2.5f);
+            float randomX = Random.Range(-0.5f,1f);
             float randomY = Random.Range(-14,-16);
             var targetPos = transform.position + new Vector3(randomX,randomY);
         

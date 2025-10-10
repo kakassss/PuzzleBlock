@@ -45,7 +45,7 @@ namespace Core.Grid.Scripts.Controller
                 {
                     Debug.DrawLine(GetWorldPosition(x,y), GetWorldPosition(x, y + 1), Color.green,100f);
                     Debug.DrawLine(GetWorldPosition(x,y), GetWorldPosition(x+1, y), Color.green,100f);
-                    _gridArray[x, y] = new GridCell(new Vector3(x,y));
+                    _gridArray[x, y] = new GridCell();
                 
                     GenerateTriangles(x,y);
                 }

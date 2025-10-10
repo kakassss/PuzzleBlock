@@ -12,7 +12,7 @@ namespace Core.Piece.Scripts.Controller
     public class PieceLoader : IPieceLoader
     {
         private List<TriangleCell> _allTriangles = new List<TriangleCell>();
-        private List<global::Core.Piece.Scripts.Data.Piece> _pieces = new List<global::Core.Piece.Scripts.Data.Piece>();
+        private List<Data.Piece> _pieces = new List<Data.Piece>();
         private List<Vector3> _snapPoints = new List<Vector3>();
         private List<PieceView> _spawnedPieces = new List<PieceView>();
 
@@ -43,7 +43,7 @@ namespace Core.Piece.Scripts.Controller
         
             foreach (var pieceData in levelData.Pieces)
             {
-                global::Core.Piece.Scripts.Data.Piece piece = new global::Core.Piece.Scripts.Data.Piece(pieceData.pieceId);
+                Data.Piece piece = new Data.Piece(pieceData.pieceId);
             
                 foreach (var triData in pieceData.triangles)
                 {
@@ -63,7 +63,7 @@ namespace Core.Piece.Scripts.Controller
         {
             for (int i = 0; i < _pieces.Count; i++)
             {
-                global::Core.Piece.Scripts.Data.Piece piece = _pieces[i];
+                Data.Piece piece = _pieces[i];
                 Mesh mesh = piece.CreateMesh();
             
                 var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_pieceViewPrefab, _parentTransform);
@@ -72,18 +72,10 @@ namespace Core.Piece.Scripts.Controller
             
                 pieceGo.SetPiece(piece.Triangles,_snapPoints);
                 pieceGo.SetMesh(mesh);
-
-                PieceData pieceData = levelData.Pieces.Find(p => p.pieceId == piece.ID);
-                // if (pieceData != null)
-                // {
-                //     pieceGo.transform.position = pieceData.startPosition;
-                // }
-                // else
-                // {
+                
                 pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
                 _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
-                //}
-            
+                
                 _spawnedPieces.Add(pieceGo);
             }
         

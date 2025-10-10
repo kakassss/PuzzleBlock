@@ -40,12 +40,12 @@ namespace Core.Piece.Scripts.Controller
         private void DrawPieces()
         {
             List<PieceView> spawnedPieces = new List<PieceView>();;
-            List<global::Core.Piece.Scripts.Data.Piece> pieces = _pieceFactory.GetPieces();
+            List<Data.Piece> pieces = _pieceFactory.GetPieces();
             List<Vector3> snapPoints = _pieceFactory.GetSnapPoints();
         
             for (int i = 0; i < pieces.Count; i++)
             {
-                global::Core.Piece.Scripts.Data.Piece piece = pieces[i];
+                Data.Piece piece = pieces[i];
                 Mesh mesh = piece.CreateMesh();
             
                 var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_pieceViewPrefab, _pieceViewParent);

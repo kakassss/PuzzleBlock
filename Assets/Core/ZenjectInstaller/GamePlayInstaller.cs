@@ -6,6 +6,7 @@ using Core.Level;
 using Core.Level.Controller;
 using Core.Piece.Scripts.Controller;
 using Core.Piece.Scripts.View;
+using Core.Popup.Scripts.Controller;
 using Core.Popup.Scripts.Data;
 using UnityEngine;
 using Zenject;

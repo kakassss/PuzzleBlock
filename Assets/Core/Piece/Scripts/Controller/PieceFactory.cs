@@ -11,10 +11,10 @@ namespace Core.Piece.Scripts.Controller
     {
         public int GetGridSize() => _gridController.GetGridSize();
         public List<Vector3> GetSnapPoints() => _snapPoints;
-        public List<global::Core.Piece.Scripts.Data.Piece> GetPieces() => _pieces;
+        public List<Data.Piece> GetPieces() => _pieces;
     
         private List<TriangleCell> _allTriangles = new List<TriangleCell>();
-        private List<global::Core.Piece.Scripts.Data.Piece> _pieces = new List<global::Core.Piece.Scripts.Data.Piece>();
+        private List<Data.Piece> _pieces = new List<Data.Piece>();
         private List<Vector3> _snapPoints = new List<Vector3>();
     
         private IGridController _gridController;
@@ -56,7 +56,7 @@ namespace Core.Piece.Scripts.Controller
             {
                 if (!tri.Visited)
                 {
-                    global::Core.Piece.Scripts.Data.Piece newPiece = new global::Core.Piece.Scripts.Data.Piece(pieceIdCounter++);
+                    Data.Piece newPiece = new Data.Piece(pieceIdCounter++);
                     GrowRegion(tri, newPiece);
                     _pieces.Add(newPiece);
                 }
@@ -90,7 +90,7 @@ namespace Core.Piece.Scripts.Controller
     
         private int FindNeighborPiece(int smallestPieceIndex)
         {
-            global::Core.Piece.Scripts.Data.Piece smallestPiece = _pieces[smallestPieceIndex];
+            Data.Piece smallestPiece = _pieces[smallestPieceIndex];
         
             for (int i = 0; i < _pieces.Count; i++)
             {
@@ -122,7 +122,7 @@ namespace Core.Piece.Scripts.Controller
             _triangleNeighborService.FindNeighbors(_allTriangles);
         }
     
-        private void GrowRegion(TriangleCell start, global::Core.Piece.Scripts.Data.Piece piece)
+        private void GrowRegion(TriangleCell start, Data.Piece piece)
         {
             Queue<TriangleCell> queue = new Queue<TriangleCell>();
             queue.Enqueue(start);
