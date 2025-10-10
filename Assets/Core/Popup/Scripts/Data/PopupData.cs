@@ -7,6 +7,5 @@ namespace Core.Popup.Scripts.Data
     {
         public string Name;
         public GameObject Prefab;
-    
     }
 }

@@ -51,7 +51,6 @@ namespace Core.ZenjectInstaller
             Container.BindInterfacesTo<PieceLoader>().AsSingle().WithArguments(_pieceViewPrefab,_pieceParent).NonLazy();
             Container.BindInterfacesTo<PieceFactory>().AsTransient().NonLazy();
             Container.BindInterfacesTo<PieceBuilder>().AsSingle().WithArguments(_pieceViewPrefab,_pieceParent).NonLazy();
-            
             Container.BindInterfacesTo<PieceDrawer>().AsSingle().NonLazy();
         }
     }

@@ -8,8 +8,10 @@ namespace Core.Piece.Scripts.Data
     public class Piece
     {
         public int ID { get; private set; }
+        public List<TriangleCell> Triangles => _triangles;
+        public int TriangleCount => _triangles.Count;
+        
         private List<TriangleCell> _triangles;
-    
         private Bounds? _bounds;
         private Dictionary<Vector3, int> _cellOccupancy;
     
@@ -42,9 +44,6 @@ namespace Core.Piece.Scripts.Data
                 AddTriangle(tri);
             }
         }
-    
-        public List<TriangleCell> Triangles => _triangles;
-        public int TriangleCount => _triangles.Count;
         
         public Bounds GetBounds()
         {

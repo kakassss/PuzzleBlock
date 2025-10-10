@@ -21,11 +21,11 @@ namespace Core.Piece.Scripts.Controller
                 
                     int sharedVertices = 0;
                 
-                    foreach (var va in triangleX.Vertices)
+                    foreach (var verticesX in triangleX.Vertices)
                     {
-                        foreach (var vb in triangleY.Vertices)
+                        foreach (var verticesY in triangleY.Vertices)
                         {
-                            if (Vector3.Distance(va, vb) < _epsilon)
+                            if (Vector3.Distance(verticesX, verticesY) < _epsilon)
                                 sharedVertices++;
                         }
                     }

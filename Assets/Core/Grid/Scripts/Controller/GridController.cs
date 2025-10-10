@@ -75,7 +75,7 @@ namespace Core.Grid.Scripts.Controller
             _centerPos.Add(center);
         }
     
-        #region Public Fiedls
+        #region Public Fields
     
         public Vector3 GetWorldPosition(int x, int y)
         {
