@@ -125,49 +125,7 @@ namespace Core.Piece.Scripts.View
                 }
             }
         }
-    
-    
-        // private void HandlePieceRelease()
-        // {
-        //     Vector3? bestSnapPos = _pieceSnapService.FindBestSnapPosition(transform);
-        //     if (!bestSnapPos.HasValue)
-        //         return;
-        //
-        //     SnapToPosition(bestSnapPos.Value);
-        //     TryPlacePieceOnGrid();
-        // }
-        //
-        // private void SnapToPosition(Vector3 snapPosition)
-        // {
-        //     transform.position = snapPosition;
-        // }
-        //
-        // private void TryPlacePieceOnGrid()
-        // {
-        //     bool placed = _piecePlacementController.TryPlaceOnGrid(transform);
-        //     if (placed)
-        //         HandleSuccessfulPlacement();
-        //     else
-        //         HandleFailedPlacement();
-        // }
-        //
-        // private void HandleSuccessfulPlacement()
-        // {
-        //     _isPlacedOnGrid = true;
-        //     _levelCompletionController.RegisterPiecePlacement(true);
-        // }
-        //
-        // private void HandleFailedPlacement()
-        // {
-        //     _pieceMouseInputHandler.HandleMouseUp(transform);
-        //
-        //     if (_isPlacedOnGrid)
-        //     {
-        //         _levelCompletionController.RegisterPiecePlacement(false);
-        //         _isPlacedOnGrid = false;
-        //     }
-        // }
-    
+        
         private void OnDrawGizmos()
         {
             if (_allTriangles == null || _allTriangles.Count == 0) return;

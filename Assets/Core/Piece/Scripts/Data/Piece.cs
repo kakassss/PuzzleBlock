@@ -45,9 +45,7 @@ namespace Core.Piece.Scripts.Data
     
         public List<TriangleCell> Triangles => _triangles;
         public int TriangleCount => _triangles.Count;
-        public int OccupiedCellCount => _cellOccupancy.Count;
-    
-    
+        
         public Bounds GetBounds()
         {
             if (_bounds.HasValue)
@@ -92,21 +90,7 @@ namespace Core.Piece.Scripts.Data
             }
             return false;
         }
-    
-        public int GetSharedEdgeCount(Piece other)
-        {
-            int count = 0;
-            foreach (var tri in _triangles)
-            {
-                foreach (var neighbor in tri.Neighbors)
-                {
-                    if (other._triangles.Contains(neighbor))
-                        count++;
-                }
-            }
-            return count;
-        }
-    
+        
         public Mesh CreateMesh()
         {
             Mesh mesh = new Mesh();
