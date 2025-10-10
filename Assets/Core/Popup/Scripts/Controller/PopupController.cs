@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Core.Popup.Scripts.Controller;
+using Core.Popup.Scripts.Data;
 using UnityEngine;
 using Zenject;
 

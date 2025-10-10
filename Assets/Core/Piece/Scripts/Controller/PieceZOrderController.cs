@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+﻿using Core.Piece.Scripts.Controller.Interfaces;
+using UnityEngine;
 
-public class PieceZOrderController : IPieceZOrderController
+namespace Core.Piece.Scripts.Controller
 {
-    private static float GlobalZOrder = 0;
-    
-    public void BringToFront(Transform transform)
+    public class PieceZOrderController : IPieceZOrderController
     {
-        GlobalZOrder -= 0.01f;
-        Vector3 pos = transform.position;
-        pos.z = GlobalZOrder;
-        transform.position = pos;
+        private static float GlobalZOrder = 0;
+    
+        public void BringToFront(Transform transform)
+        {
+            GlobalZOrder -= 0.01f;
+            Vector3 pos = transform.position;
+            pos.z = GlobalZOrder;
+            transform.position = pos;
+        }
     }
 }

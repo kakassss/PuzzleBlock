@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IPieceSpawnPositionController
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public Vector3 GetSpawnPosition();
-    public void PieceMovementTween(Transform transform);
+    public interface IPieceSpawnPositionController
+    {
+        public Vector3 GetSpawnPosition();
+        public void PieceMovementTween(Transform transform);
+    }
 }

@@ -2,15 +2,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class PieceData
+namespace Core.Piece.Scripts.Data
 {
-    public int pieceId;
-    public List<TriangleData> triangles;
-    public Vector3 startPosition;
-    
-    public PieceData()
+    [Serializable]
+    public class PieceData
     {
-        triangles = new List<TriangleData>();
+        public int pieceId;
+        public List<TriangleData> triangles;
+        public Vector3 startPosition;
+    
+        public PieceData()
+        {
+            triangles = new List<TriangleData>();
+        }
     }
 }

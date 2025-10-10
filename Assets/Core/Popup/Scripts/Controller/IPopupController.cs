@@ -1,5 +1,8 @@
-﻿public interface IPopupController
+﻿namespace Core.Popup.Scripts.Controller
 {
-    public void OpenPopupByName(string name);
-    public void CloseActivePopup();
+    public interface IPopupController
+    {
+        public void OpenPopupByName(string name);
+        public void CloseActivePopup();
+    }
 }

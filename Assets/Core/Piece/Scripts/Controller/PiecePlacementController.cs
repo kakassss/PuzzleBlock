@@ -1,85 +1,92 @@
 using System.Collections.Generic;
+using Core.Grid.Scripts.Controller;
+using Core.Grid.Scripts.Data;
+using Core.Piece.Scripts.Controller.Interfaces;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public class PiecePlacementController : IPiecePlacementController
+namespace Core.Piece.Scripts.Controller
 {
-    private List<TriangleCell> _allTriangles = new List<TriangleCell>();
-    private Dictionary<TriangleCell, GridCell> _triangleToCell = new Dictionary<TriangleCell, GridCell>();
-    private Vector3 _centerPosition;
+    public class PiecePlacementController : IPiecePlacementController
+    {
+        private List<TriangleCell> _allTriangles = new List<TriangleCell>();
+        private Dictionary<TriangleCell, GridCell> _triangleToCell = new Dictionary<TriangleCell, GridCell>();
+        private Vector3 _centerPosition;
     
-    private readonly IGridController _gridController;
+        private readonly IGridController _gridController;
 
-    public PiecePlacementController(IGridController gridController)
-    {
-        _gridController = gridController;
-    }
-
-    public void Initialize(List<TriangleCell> allTriangles, Vector3 centerPosition)
-    {
-        _allTriangles = allTriangles;
-        _centerPosition = centerPosition;
-    }
-    
-    public bool TryPlaceOnGrid(Transform transform)
-    {
-        List<(TriangleCell triangle, GridCell gridCell)> placements = new List<(TriangleCell, GridCell)>();
-    
-        foreach (var triangle in _allTriangles)
+        public PiecePlacementController(IGridController gridController)
         {
-            Vector3 worldPos = GetTriangleWorldCenter(transform,triangle);
-            var gridCell = _gridController.GetValue(worldPos);
-        
-            if (gridCell == null)
-            {
-                return false;
-            }
-        
-            if (!gridCell.CanPlace(triangle))
-            {
-                return false;
-            }
-        
-            placements.Add((triangle, gridCell));
+            _gridController = gridController;
         }
 
-        _triangleToCell.Clear();
-    
-        foreach (var (triangle, gridCell) in placements)
+        public void Initialize(List<TriangleCell> allTriangles, Vector3 centerPosition)
         {
-            gridCell.AddTriangle(triangle);
-            _triangleToCell[triangle] = gridCell;
+            _allTriangles = allTriangles;
+            _centerPosition = centerPosition;
         }
     
-        return true;
-    }
-    
-    public void ClearFromGrid()
-    {
-        if(_triangleToCell.Count == 0) return;
-        
-        foreach (var kvp in _triangleToCell)
+        public bool TryPlaceOnGrid(Transform transform)
         {
-            TriangleCell triangle = kvp.Key;
-            GridCell gridCell = kvp.Value;
+            List<(TriangleCell triangle, GridCell gridCell)> placements = new List<(TriangleCell, GridCell)>();
+    
+            foreach (var triangle in _allTriangles)
+            {
+                Vector3 worldPos = GetTriangleWorldCenter(transform,triangle);
+                var gridCell = _gridController.GetValue(worldPos);
+        
+                if (gridCell == null)
+                {
+                    return false;
+                }
+        
+                if (!gridCell.CanPlace(triangle))
+                {
+                    return false;
+                }
+        
+                placements.Add((triangle, gridCell));
+            }
+
+            _triangleToCell.Clear();
+    
+            foreach (var (triangle, gridCell) in placements)
+            {
+                gridCell.AddTriangle(triangle);
+                _triangleToCell[triangle] = gridCell;
+            }
+    
+            return true;
+        }
+    
+        public void ClearFromGrid()
+        {
+            if(_triangleToCell.Count == 0) return;
+        
+            foreach (var kvp in _triangleToCell)
+            {
+                TriangleCell triangle = kvp.Key;
+                GridCell gridCell = kvp.Value;
             
-            if (gridCell.HasTriangle(triangle))
-            {
-                gridCell.RemoveTriangle(triangle);
-            }
+                if (gridCell.HasTriangle(triangle))
+                {
+                    gridCell.RemoveTriangle(triangle);
+                }
 
-        }
+            }
         
-        _triangleToCell.Clear();
-    }
+            _triangleToCell.Clear();
+        }
     
-    private Vector3 GetTriangleWorldCenter(Transform transform,TriangleCell triangle)
-    {
-        Vector3 localCenter = Vector3.zero;
-        foreach (var vertex in triangle.Vertices)
-            localCenter += vertex;
-        localCenter /= triangle.Vertices.Length;
+        private Vector3 GetTriangleWorldCenter(Transform transform,TriangleCell triangle)
+        {
+            Vector3 localCenter = Vector3.zero;
+            foreach (var vertex in triangle.Vertices)
+                localCenter += vertex;
+            localCenter /= triangle.Vertices.Length;
     
-        Vector3 normalizedCenter = localCenter - _centerPosition;
-        return transform.TransformPoint(normalizedCenter);
+            Vector3 normalizedCenter = localCenter - _centerPosition;
+            return transform.TransformPoint(normalizedCenter);
+        }
     }
 }

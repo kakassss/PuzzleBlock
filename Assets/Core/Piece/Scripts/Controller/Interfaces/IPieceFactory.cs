@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPieceFactory
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public void GeneratePiece();
-    public int GetGridSize();
-    public List<Vector3> GetSnapPoints();
-    public List<Piece> GetPieces();
+    public interface IPieceFactory
+    {
+        public void GeneratePiece();
+        public int GetGridSize();
+        public List<Vector3> GetSnapPoints();
+        public List<global::Core.Piece.Scripts.Data.Piece> GetPieces();
+    }
 }

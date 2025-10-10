@@ -1,4 +1,7 @@
-public interface IGameInitializer
+namespace Core.GameInitializer
 {
-    public void Initialize();
+    public interface IGameInitializer
+    {
+        public void Initialize();
+    }
 }

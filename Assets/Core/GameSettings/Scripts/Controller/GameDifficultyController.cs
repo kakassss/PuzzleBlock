@@ -1,21 +1,19 @@
+using Core.GameSettings.Scripts.Data;
 
-public interface IGameDifficultyController
+namespace Core.GameSettings.Scripts.Controller
 {
-    public void SetDifficultyData(GameDifficultySOData gameDifficultySoData);
-    public GameDifficultySOData GetDifficultyData();
-}
-
-public class GameDifficultyController : IGameDifficultyController
-{
-    private GameDifficultySOData _currentGameDifficultySoData;
-    
-    public void SetDifficultyData(GameDifficultySOData gameDifficultySoData)
+    public class GameDifficultyController : IGameDifficultyController
     {
-        _currentGameDifficultySoData = gameDifficultySoData;
-    }
+        private GameDifficultySOData _currentGameDifficultySoData;
     
-    public GameDifficultySOData GetDifficultyData()
-    {
-        return _currentGameDifficultySoData;
+        public void SetDifficultyData(GameDifficultySOData gameDifficultySoData)
+        {
+            _currentGameDifficultySoData = gameDifficultySoData;
+        }
+    
+        public GameDifficultySOData GetDifficultyData()
+        {
+            return _currentGameDifficultySoData;
+        }
     }
 }

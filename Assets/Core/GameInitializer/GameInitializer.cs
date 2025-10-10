@@ -1,29 +1,36 @@
+using Core.Camera;
+using Core.Grid.Scripts.Controller;
+using Core.Level;
+using Core.Level.Controller;
 
-public class GameInitializer : IGameInitializer
+namespace Core.GameInitializer
 {
-    private readonly IGridController _gridController;
-    private readonly ICameraSizeController _cameraSizeController;
-    private readonly ILevelController _levelController;
-    
-    public GameInitializer(IGridController gridController, ICameraSizeController cameraSizeController, ILevelController levelController)
+    public class GameInitializer : IGameInitializer
     {
-        _gridController = gridController;
-        _cameraSizeController = cameraSizeController;
-        _levelController = levelController;
+        private readonly IGridController _gridController;
+        private readonly ICameraSizeController _cameraSizeController;
+        private readonly ILevelController _levelController;
+    
+        public GameInitializer(IGridController gridController, ICameraSizeController cameraSizeController, ILevelController levelController)
+        {
+            _gridController = gridController;
+            _cameraSizeController = cameraSizeController;
+            _levelController = levelController;
         
-        Initialize();
-    }
+            Initialize();
+        }
     
-    public void Initialize()
-    {
-        SetupGame();
-    }
+        public void Initialize()
+        {
+            SetupGame();
+        }
     
-    private void SetupGame()
-    {
-        int gridSize = _gridController.GetGridSize();
-        _cameraSizeController.SetCameraSize(gridSize);
+        private void SetupGame()
+        {
+            int gridSize = _gridController.GetGridSize();
+            _cameraSizeController.SetCameraSize(gridSize);
         
-        _levelController.GenerateNewLevel();
+            _levelController.GenerateNewLevel();
+        }
     }
 }

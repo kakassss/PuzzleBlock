@@ -1,19 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-public abstract class BaseButtonListener : MonoBehaviour
+namespace Core.Button.Scripts
 {
-    [SerializeField] private Button _button;
-
-    private void Awake()
+    public abstract class BaseButtonListener : MonoBehaviour
     {
-        AddListener();
-    }
+        [SerializeField] private UnityEngine.UI.Button _button;
 
-    private void AddListener()
-    {
-        _button.onClick.AddListener(OnClick);
-    }
+        private void Awake()
+        {
+            AddListener();
+        }
+
+        private void AddListener()
+        {
+            _button.onClick.AddListener(OnClick);
+        }
     
-    protected abstract void OnClick();
+        protected abstract void OnClick();
+    }
 }

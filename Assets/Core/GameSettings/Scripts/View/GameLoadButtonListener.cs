@@ -1,17 +1,23 @@
+using Core.Button.Scripts;
+using Core.Level;
+using Core.Level.Controller;
 using Zenject;
 
-public class GameLoadButtonListener : BaseButtonListener
+namespace Core.GameSettings.Scripts.View
 {
-    private ILevelController _levelController;
-    
-    [Inject]
-    private void Construct(ILevelController levelController)
+    public class GameLoadButtonListener : BaseButtonListener
     {
-        _levelController = levelController;
-    }
+        private ILevelController _levelController;
     
-    protected override void OnClick()
-    {
-        _levelController.LoadLevel();
+        [Inject]
+        private void Construct(ILevelController levelController)
+        {
+            _levelController = levelController;
+        }
+    
+        protected override void OnClick()
+        {
+            _levelController.LoadLevel();
+        }
     }
 }

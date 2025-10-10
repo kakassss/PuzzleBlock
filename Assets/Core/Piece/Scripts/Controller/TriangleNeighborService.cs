@@ -1,35 +1,40 @@
 using System.Collections.Generic;
+using Core.Piece.Scripts.Controller.Interfaces;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public class TriangleNeighborService : ITriangleNeighborService
+namespace Core.Piece.Scripts.Controller
 {
-    private float _epsilon = 0.01f;
-    
-    public void FindNeighbors(List<TriangleCell> triangles)
+    public class TriangleNeighborService : ITriangleNeighborService
     {
-        foreach (var triangleX in triangles)
+        private float _epsilon = 0.01f;
+    
+        public void FindNeighbors(List<TriangleCell> triangles)
         {
-            triangleX.Neighbors.Clear();
-            
-            foreach (var triangleY in triangles)
+            foreach (var triangleX in triangles)
             {
-                if (triangleX == triangleY) continue;
-                
-                int sharedVertices = 0;
-                
-                foreach (var va in triangleX.Vertices)
+                triangleX.Neighbors.Clear();
+            
+                foreach (var triangleY in triangles)
                 {
-                    foreach (var vb in triangleY.Vertices)
+                    if (triangleX == triangleY) continue;
+                
+                    int sharedVertices = 0;
+                
+                    foreach (var va in triangleX.Vertices)
                     {
-                        if (Vector3.Distance(va, vb) < _epsilon)
-                            sharedVertices++;
+                        foreach (var vb in triangleY.Vertices)
+                        {
+                            if (Vector3.Distance(va, vb) < _epsilon)
+                                sharedVertices++;
+                        }
                     }
-                }
 
-                if (sharedVertices == 2)
-                {
-                    if (!triangleX.Neighbors.Contains(triangleY))
-                        triangleX.Neighbors.Add(triangleY);
+                    if (sharedVertices == 2)
+                    {
+                        if (!triangleX.Neighbors.Contains(triangleY))
+                            triangleX.Neighbors.Add(triangleY);
+                    }
                 }
             }
         }

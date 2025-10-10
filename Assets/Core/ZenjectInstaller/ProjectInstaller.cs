@@ -1,3 +1,4 @@
+using Core.GameSettings.Scripts.Controller;
 using Zenject;
 
 public class ProjectInstaller : MonoInstaller

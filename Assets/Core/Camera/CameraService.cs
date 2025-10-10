@@ -1,16 +1,17 @@
-﻿using UnityEngine;
-
-public class CameraService : ICameraService
+﻿namespace Core.Camera
 {
-    private readonly Camera _camera;
+    public class CameraService : ICameraService
+    {
+        private readonly UnityEngine.Camera _camera;
 
-    public CameraService(Camera camera)
-    {
-        _camera = camera;
-    }
+        public CameraService(UnityEngine.Camera camera)
+        {
+            _camera = camera;
+        }
     
-    public Camera GetCamera()
-    {
-        return _camera;
+        public UnityEngine.Camera GetCamera()
+        {
+            return _camera;
+        }
     }
 }

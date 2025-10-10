@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public interface IPiecePlacementController
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public void Initialize(List<TriangleCell> allTriangles, Vector3 centerPosition);
-    public bool TryPlaceOnGrid(Transform transform);
-    public void ClearFromGrid();
+    public interface IPiecePlacementController
+    {
+        public void Initialize(List<TriangleCell> allTriangles, Vector3 centerPosition);
+        public bool TryPlaceOnGrid(Transform transform);
+        public void ClearFromGrid();
+    }
 }

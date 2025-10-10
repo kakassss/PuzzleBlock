@@ -1,30 +1,35 @@
 using System.Collections.Generic;
+using Core.Piece.Scripts.Controller.Interfaces;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public class PieceCenterController : IPieceCenterController
+namespace Core.Piece.Scripts.Controller
 {
-    private Vector3 _pieceCenter;
-    
-    public void CalculatePieceCenter(List<TriangleCell> allTriangles)
+    public class PieceCenterController : IPieceCenterController
     {
-        if (allTriangles.Count == 0) return;
-        
-        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-        Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        private Vector3 _pieceCenter;
     
-        foreach (var tri in allTriangles)
+        public void CalculatePieceCenter(List<TriangleCell> allTriangles)
         {
-            foreach (var vertex in tri.Vertices)
+            if (allTriangles.Count == 0) return;
+        
+            Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+    
+            foreach (var tri in allTriangles)
             {
-                min = Vector3.Min(min, vertex);
-                max = Vector3.Max(max, vertex);
+                foreach (var vertex in tri.Vertices)
+                {
+                    min = Vector3.Min(min, vertex);
+                    max = Vector3.Max(max, vertex);
+                }
             }
+            _pieceCenter = (min + max) / 2f;
         }
-        _pieceCenter = (min + max) / 2f;
-    }
 
-    public Vector3 GetPieceCenter()
-    {
-        return _pieceCenter;
+        public Vector3 GetPieceCenter()
+        {
+            return _pieceCenter;
+        }
     }
 }

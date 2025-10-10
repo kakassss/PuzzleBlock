@@ -1,34 +1,38 @@
 ﻿using System.Collections.Generic;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public class GridCell
+namespace Core.Grid.Scripts.Data
 {
-    private List<TriangleCell> _triangles = new List<TriangleCell>();
-    
-    public GridCell(Vector3 cell)
+    public class GridCell
     {
-    }
+        private List<TriangleCell> _triangles = new List<TriangleCell>();
     
-    public bool CanPlace(TriangleCell triangle)
-    {
-        return _triangles.Count < 4 && !_triangles.Contains(triangle);
-    }
-    
-    public void AddTriangle(TriangleCell triangle)
-    {
-        if (!_triangles.Contains(triangle))
+        public GridCell(Vector3 cell)
         {
-            _triangles.Add(triangle);
         }
-    }
     
-    public void RemoveTriangle(TriangleCell triangle)
-    {
-        _triangles.Remove(triangle);
-    }
+        public bool CanPlace(TriangleCell triangle)
+        {
+            return _triangles.Count < 4 && !_triangles.Contains(triangle);
+        }
     
-    public bool HasTriangle(TriangleCell triangle)
-    {
-        return _triangles.Contains(triangle);
+        public void AddTriangle(TriangleCell triangle)
+        {
+            if (!_triangles.Contains(triangle))
+            {
+                _triangles.Add(triangle);
+            }
+        }
+    
+        public void RemoveTriangle(TriangleCell triangle)
+        {
+            _triangles.Remove(triangle);
+        }
+    
+        public bool HasTriangle(TriangleCell triangle)
+        {
+            return _triangles.Contains(triangle);
+        }
     }
 }

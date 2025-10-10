@@ -1,4 +1,12 @@
 using System.Collections.Generic;
+using Core.Camera;
+using Core.GameInitializer;
+using Core.Grid.Scripts.Controller;
+using Core.Level;
+using Core.Level.Controller;
+using Core.Piece.Scripts.Controller;
+using Core.Piece.Scripts.View;
+using Core.Popup.Scripts.Data;
 using UnityEngine;
 using Zenject;
 
@@ -29,7 +37,7 @@ public class GamePlayInstaller : MonoInstaller
         Container.BindInterfacesTo<PieceSpawnPositionController>().AsSingle().NonLazy();
         
         Container.BindInterfacesTo<LevelPersistenceService>().AsSingle().NonLazy();
-        Container.BindInterfacesTo<ICameraSizeSizeController>().AsSingle().NonLazy();
+        Container.BindInterfacesTo<CameraSizeController>().AsSingle().NonLazy();
         Container.BindInterfacesTo<TriangleNeighborService>().AsSingle().NonLazy();
         Container.BindInterfacesTo<PieceSaverService>().AsSingle().NonLazy();
         Container.BindInterfacesTo<PieceLoader>().AsSingle().WithArguments(_pieceViewPrefab,_pieceParent).NonLazy();

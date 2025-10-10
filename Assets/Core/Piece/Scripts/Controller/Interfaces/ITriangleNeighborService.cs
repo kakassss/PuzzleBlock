@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using Core.Piece.Scripts.Data;
 
-public interface ITriangleNeighborService
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    void FindNeighbors(List<TriangleCell> triangles);
+    public interface ITriangleNeighborService
+    {
+        void FindNeighbors(List<TriangleCell> triangles);
+    }
 }

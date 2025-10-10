@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public interface IPieceZOrderController
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public void BringToFront(Transform transform);
+    public interface IPieceZOrderController
+    {
+        public void BringToFront(Transform transform);
+    }
 }

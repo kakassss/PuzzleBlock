@@ -1,24 +1,30 @@
+using Core.Button.Scripts;
+using Core.GameSettings.Scripts.Controller;
+using Core.GameSettings.Scripts.Data;
 using UnityEngine;
 using Zenject;
 
-public class GameDifficultyButtonListener : BaseButtonListener
+namespace Core.GameSettings.Scripts.View
 {
-    [SerializeField] private GameDifficultySOData _gameDifficultySOData;
+    public class GameDifficultyButtonListener : BaseButtonListener
+    {
+        [SerializeField] private GameDifficultySOData _gameDifficultySOData;
     
-    private ISceneLoaderService _sceneLoaderService;
-    private IGameDifficultyController _gameDifficultyController;
+        private ISceneLoaderService _sceneLoaderService;
+        private IGameDifficultyController _gameDifficultyController;
 
-    [Inject]
-    private void Construct(IGameDifficultyController gameDifficultyController, ISceneLoaderService sceneLoaderService)
-    {
-        _gameDifficultyController = gameDifficultyController;
-        _sceneLoaderService = sceneLoaderService;
-    }
+        [Inject]
+        private void Construct(IGameDifficultyController gameDifficultyController, ISceneLoaderService sceneLoaderService)
+        {
+            _gameDifficultyController = gameDifficultyController;
+            _sceneLoaderService = sceneLoaderService;
+        }
     
-    protected override void OnClick()
-    {
-        _gameDifficultyController.SetDifficultyData(_gameDifficultySOData);
+        protected override void OnClick()
+        {
+            _gameDifficultyController.SetDifficultyData(_gameDifficultySOData);
         
-        _sceneLoaderService.LoadGameScene();
+            _sceneLoaderService.LoadGameScene();
+        }
     }
 }

@@ -1,5 +1,8 @@
-public interface IPieceBuilder
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public void GenerateNewPiece();
-    public void Clear();
+    public interface IPieceBuilder
+    {
+        public void GenerateNewPiece();
+        public void Clear();
+    }
 }

@@ -1,4 +1,7 @@
-public interface ICameraSizeController
+namespace Core.Camera
 {
-    public void SetCameraSize(int gridSize);
+    public interface ICameraSizeController
+    {
+        public void SetCameraSize(int gridSize);
+    }
 }

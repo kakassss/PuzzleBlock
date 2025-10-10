@@ -1,25 +1,29 @@
+using Core.Piece.Scripts.Controller.Interfaces;
 using DG.Tweening;
 using UnityEngine;
 
-public class PieceSpawnPositionController : IPieceSpawnPositionController
+namespace Core.Piece.Scripts.Controller
 {
-    public Vector3 GetSpawnPosition()
+    public class PieceSpawnPositionController : IPieceSpawnPositionController
     {
-        float randomX = Random.Range(2, 3);
-        float randomY = Random.Range(10, 13);
+        public Vector3 GetSpawnPosition()
+        {
+            float randomX = Random.Range(2, 3);
+            float randomY = Random.Range(10, 13);
         
-        return new Vector3(randomX, randomY, 0);
-    }
+            return new Vector3(randomX, randomY, 0);
+        }
 
-    public void PieceMovementTween(Transform transform)
-    {
-        Sequence sequence = DOTween.Sequence();
-        sequence.SetAutoKill(true);
+        public void PieceMovementTween(Transform transform)
+        {
+            Sequence sequence = DOTween.Sequence();
+            sequence.SetAutoKill(true);
         
-        float randomX = Random.Range(-1f,2.5f);
-        float randomY = Random.Range(-14,-16);
-        var targetPos = transform.position + new Vector3(randomX,randomY);
+            float randomX = Random.Range(-1f,2.5f);
+            float randomY = Random.Range(-14,-16);
+            var targetPos = transform.position + new Vector3(randomX,randomY);
         
-        sequence.Append(transform.DOMove(targetPos, .5f));
+            sequence.Append(transform.DOMove(targetPos, .5f));
+        }
     }
 }

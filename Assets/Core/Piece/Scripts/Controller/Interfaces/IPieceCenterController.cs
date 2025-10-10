@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using Core.Piece.Scripts.Data;
 using UnityEngine;
 
-public interface IPieceCenterController
+namespace Core.Piece.Scripts.Controller.Interfaces
 {
-    public void CalculatePieceCenter(List<TriangleCell> allTriangles);
-    public Vector3 GetPieceCenter();
+    public interface IPieceCenterController
+    {
+        public void CalculatePieceCenter(List<TriangleCell> allTriangles);
+        public Vector3 GetPieceCenter();
+    }
 }

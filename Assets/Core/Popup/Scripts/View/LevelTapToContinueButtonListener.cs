@@ -1,21 +1,27 @@
+using Core.Button.Scripts;
+using Core.GameInitializer;
+using Core.Popup.Scripts.Controller;
 using Zenject;
 
-public class LevelTapToContinueButtonListener : BaseButtonListener
+namespace Core.Popup.Scripts.View
 {
-    private IPopupController _popupController;
-    private IGameInitializer _gameInitializer;
-    
-    [Inject]
-    private void Construct(IGameInitializer gameInitializer, IPopupController popupController)
+    public class LevelTapToContinueButtonListener : BaseButtonListener
     {
-        _gameInitializer = gameInitializer;
-        _popupController = popupController;
-    }
+        private IPopupController _popupController;
+        private IGameInitializer _gameInitializer;
     
-    protected override void OnClick()
-    {
-        _popupController.CloseActivePopup();
+        [Inject]
+        private void Construct(IGameInitializer gameInitializer, IPopupController popupController)
+        {
+            _gameInitializer = gameInitializer;
+            _popupController = popupController;
+        }
+    
+        protected override void OnClick()
+        {
+            _popupController.CloseActivePopup();
         
-        _gameInitializer.Initialize();   
+            _gameInitializer.Initialize();   
+        }
     }
 }

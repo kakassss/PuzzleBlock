@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class DotSpriteRendererView : MonoBehaviour
+namespace Core.Grid.Scripts.View
 {
-    [SerializeField] private SpriteRenderer _spriteRenderer;
+    public class DotSpriteRendererView : MonoBehaviour
+    {
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+    }
 }

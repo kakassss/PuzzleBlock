@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-
-public interface ICameraService
+﻿namespace Core.Camera
 {
-    public Camera GetCamera();
+    public interface ICameraService
+    {
+        public UnityEngine.Camera GetCamera();
+    }
 }

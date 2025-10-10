@@ -2,148 +2,138 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class Piece
+namespace Core.Piece.Scripts.Data
 {
-    public int ID { get; private set; }
-    private List<TriangleCell> _triangles;
-    
-    private Bounds? _bounds;
-    private Dictionary<Vector3, int> _cellOccupancy;
-    
-    public Piece(int id)
+    [Serializable]
+    public class Piece
     {
-        ID = id;
-        _triangles = new List<TriangleCell>();
-        _cellOccupancy = new Dictionary<Vector3, int>();
-    }
+        public int ID { get; private set; }
+        private List<TriangleCell> _triangles;
     
-    public void AddTriangle(TriangleCell triangle)
-    {
-        if (!_triangles.Contains(triangle))
+        private Bounds? _bounds;
+        private Dictionary<Vector3, int> _cellOccupancy;
+    
+        public Piece(int id)
         {
-            _triangles.Add(triangle);
-            
-            if (!_cellOccupancy.ContainsKey(triangle.Cell))
-                _cellOccupancy[triangle.Cell] = 0;
-            
-            _cellOccupancy[triangle.Cell]++;
-            
-            _bounds = null;
+            ID = id;
+            _triangles = new List<TriangleCell>();
+            _cellOccupancy = new Dictionary<Vector3, int>();
         }
-    }
     
-    public void AddTriangles(List<TriangleCell> triangles)
-    {
-        foreach (var tri in triangles)
+        public void AddTriangle(TriangleCell triangle)
         {
-            AddTriangle(tri);
+            if (!_triangles.Contains(triangle))
+            {
+                _triangles.Add(triangle);
+            
+                if (!_cellOccupancy.ContainsKey(triangle.Cell))
+                    _cellOccupancy[triangle.Cell] = 0;
+            
+                _cellOccupancy[triangle.Cell]++;
+            
+                _bounds = null;
+            }
         }
-    }
     
-    public List<TriangleCell> Triangles => _triangles;
-    public int TriangleCount => _triangles.Count;
-    public int OccupiedCellCount => _cellOccupancy.Count;
+        public void AddTriangles(List<TriangleCell> triangles)
+        {
+            foreach (var tri in triangles)
+            {
+                AddTriangle(tri);
+            }
+        }
+    
+        public List<TriangleCell> Triangles => _triangles;
+        public int TriangleCount => _triangles.Count;
+        public int OccupiedCellCount => _cellOccupancy.Count;
     
     
-    public Bounds GetBounds()
-    {
-        if (_bounds.HasValue)
+        public Bounds GetBounds()
+        {
+            if (_bounds.HasValue)
+                return _bounds.Value;
+        
+            if (_triangles.Count == 0)
+                return new Bounds(Vector3.zero, Vector3.zero);
+        
+            Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        
+            foreach (var tri in _triangles)
+            {
+                foreach (var vertex in tri.Vertices)
+                {
+                    min = Vector3.Min(min, vertex);
+                    max = Vector3.Max(max, vertex);
+                }
+            }
+        
+            Vector3 center = (min + max) / 2f;
+            Vector3 size = max - min;
+        
+            _bounds = new Bounds(center, size);
             return _bounds.Value;
-        
-        if (_triangles.Count == 0)
-            return new Bounds(Vector3.zero, Vector3.zero);
-        
-        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-        Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-        
-        foreach (var tri in _triangles)
+        }
+    
+        public Vector3 GetCenter()
         {
-            foreach (var vertex in tri.Vertices)
+            return GetBounds().center;
+        }
+    
+        public bool IsNeighborWith(Piece other)
+        {
+            foreach (var tri in _triangles)
             {
-                min = Vector3.Min(min, vertex);
-                max = Vector3.Max(max, vertex);
+                foreach (var neighbor in tri.Neighbors)
+                {
+                    if (other._triangles.Contains(neighbor))
+                        return true;
+                }
             }
+            return false;
         }
-        
-        Vector3 center = (min + max) / 2f;
-        Vector3 size = max - min;
-        
-        _bounds = new Bounds(center, size);
-        return _bounds.Value;
-    }
     
-    public Vector3 GetCenter()
-    {
-        return GetBounds().center;
-    }
-    
-    public bool IsNeighborWith(Piece other)
-    {
-        foreach (var tri in _triangles)
+        public int GetSharedEdgeCount(Piece other)
         {
-            foreach (var neighbor in tri.Neighbors)
+            int count = 0;
+            foreach (var tri in _triangles)
             {
-                if (other._triangles.Contains(neighbor))
-                    return true;
+                foreach (var neighbor in tri.Neighbors)
+                {
+                    if (other._triangles.Contains(neighbor))
+                        count++;
+                }
             }
+            return count;
         }
-        return false;
-    }
     
-    public int GetSharedEdgeCount(Piece other)
-    {
-        int count = 0;
-        foreach (var tri in _triangles)
+        public Mesh CreateMesh()
         {
-            foreach (var neighbor in tri.Neighbors)
+            Mesh mesh = new Mesh();
+            List<Vector3> vertices = new List<Vector3>();
+            List<int> triangles = new List<int>();
+        
+            Vector3 center = GetCenter();
+    
+            foreach (var tri in _triangles)
             {
-                if (other._triangles.Contains(neighbor))
-                    count++;
+                int startIndex = vertices.Count;
+        
+                vertices.Add(tri.Vertices[0] - center);
+                vertices.Add(tri.Vertices[1] - center);
+                vertices.Add(tri.Vertices[2] - center);
+        
+                triangles.Add(startIndex);
+                triangles.Add(startIndex + 1);
+                triangles.Add(startIndex + 2);
             }
-        }
-        return count;
-    }
     
-    public Mesh CreateMesh()
-    {
-        Mesh mesh = new Mesh();
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
         
-        Vector3 center = GetCenter();
-    
-        foreach (var tri in _triangles)
-        {
-            int startIndex = vertices.Count;
-        
-            vertices.Add(tri.Vertices[0] - center);
-            vertices.Add(tri.Vertices[1] - center);
-            vertices.Add(tri.Vertices[2] - center);
-        
-            triangles.Add(startIndex);
-            triangles.Add(startIndex + 1);
-            triangles.Add(startIndex + 2);
-        }
-    
-        mesh.SetVertices(vertices);
-        mesh.SetTriangles(triangles, 0);
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        
-        return mesh;
-    }
-    
-    public void PrintInfo()
-    {
-        Debug.Log($"=== Piece {ID} ===");
-        Debug.Log($"Triangles: {TriangleCount}");
-        Debug.Log($"Occupied Cells: {OccupiedCellCount}");
-        Debug.Log($"Bounds: {GetBounds()}");
-        
-        foreach (var kvp in _cellOccupancy)
-        {
-            Debug.Log($"  Cell ({kvp.Key.x}, {kvp.Key.y}): {kvp.Value} triangles");
+            return mesh;
         }
     }
 }

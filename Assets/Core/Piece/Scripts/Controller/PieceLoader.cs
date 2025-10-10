@@ -1,100 +1,108 @@
 using System.Collections.Generic;
+using Core.Level.Controller;
+using Core.Level.Data;
+using Core.Piece.Scripts.Controller.Interfaces;
+using Core.Piece.Scripts.Data;
+using Core.Piece.Scripts.View;
 using UnityEngine;
 using Zenject;
 
-public class PieceLoader : IPieceLoader
+namespace Core.Piece.Scripts.Controller
 {
-    private List<TriangleCell> _allTriangles = new List<TriangleCell>();
-    private List<Piece> _pieces = new List<Piece>();
-    private List<Vector3> _snapPoints = new List<Vector3>();
-    private List<PieceView> _spawnedPieces = new List<PieceView>();
-
-    private Transform _parentTransform;
-    private PieceView _pieceViewPrefab;
-    
-    private ITriangleNeighborService _triangleNeighborService;
-    private IPieceSpawnPositionController _pieceSpawnPositionController;
-    private ILevelCompletionController _levelCompletionController;
-    private IInstantiator _instantiator;
-
-    public PieceLoader(IInstantiator instantiator,IPieceSpawnPositionController pieceSpawnPositionController,
-        PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService, ILevelCompletionController levelCompletionController)
+    public class PieceLoader : IPieceLoader
     {
-        _triangleNeighborService = triangleNeighborService;
-        _instantiator = instantiator;
-        _pieceSpawnPositionController = pieceSpawnPositionController;
-        
-        _parentTransform = parentTransform;
-        _pieceViewPrefab = pieceViewPrefab;
-        
-        _levelCompletionController = levelCompletionController;
-    }
+        private List<TriangleCell> _allTriangles = new List<TriangleCell>();
+        private List<global::Core.Piece.Scripts.Data.Piece> _pieces = new List<global::Core.Piece.Scripts.Data.Piece>();
+        private List<Vector3> _snapPoints = new List<Vector3>();
+        private List<PieceView> _spawnedPieces = new List<PieceView>();
+
+        private Transform _parentTransform;
+        private PieceView _pieceViewPrefab;
     
-    public void LoadFromLevelData(LevelData levelData)
-    {
-        _snapPoints = new List<Vector3>(levelData.SnapPoints);
-        
-        foreach (var pieceData in levelData.Pieces)
+        private ITriangleNeighborService _triangleNeighborService;
+        private IPieceSpawnPositionController _pieceSpawnPositionController;
+        private ILevelCompletionController _levelCompletionController;
+        private IInstantiator _instantiator;
+
+        public PieceLoader(IInstantiator instantiator,IPieceSpawnPositionController pieceSpawnPositionController,
+            PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService, ILevelCompletionController levelCompletionController)
         {
-            Piece piece = new Piece(pieceData.pieceId);
-            
-            foreach (var triData in pieceData.triangles)
+            _triangleNeighborService = triangleNeighborService;
+            _instantiator = instantiator;
+            _pieceSpawnPositionController = pieceSpawnPositionController;
+        
+            _parentTransform = parentTransform;
+            _pieceViewPrefab = pieceViewPrefab;
+        
+            _levelCompletionController = levelCompletionController;
+        }
+    
+        public void LoadFromLevelData(LevelData levelData)
+        {
+            _snapPoints = new List<Vector3>(levelData.SnapPoints);
+        
+            foreach (var pieceData in levelData.Pieces)
             {
-                TriangleCell triangle = new TriangleCell(triData.vertices, false, triData.cell);
-                piece.AddTriangle(triangle);
-                _allTriangles.Add(triangle);
+                global::Core.Piece.Scripts.Data.Piece piece = new global::Core.Piece.Scripts.Data.Piece(pieceData.pieceId);
+            
+                foreach (var triData in pieceData.triangles)
+                {
+                    TriangleCell triangle = new TriangleCell(triData.vertices, false, triData.cell);
+                    piece.AddTriangle(triangle);
+                    _allTriangles.Add(triangle);
+                }
+            
+                _pieces.Add(piece);
             }
-            
-            _pieces.Add(piece);
-        }
         
-        _triangleNeighborService.FindNeighbors(_allTriangles);
-        DrawLoadedPieces(levelData);
-    }
-    
-    private void DrawLoadedPieces(LevelData levelData)
-    {
-        for (int i = 0; i < _pieces.Count; i++)
-        {
-            Piece piece = _pieces[i];
-            Mesh mesh = piece.CreateMesh();
-            
-            var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_pieceViewPrefab, _parentTransform);
-            pieceGo.name = "Piece_" + piece.ID;
-            mesh.name = "Piece_" + piece.ID + "_Mesh";
-            
-            pieceGo.SetPiece(piece.Triangles,_snapPoints);
-            pieceGo.SetMesh(mesh);
-
-            PieceData pieceData = levelData.Pieces.Find(p => p.pieceId == piece.ID);
-            // if (pieceData != null)
-            // {
-            //     pieceGo.transform.position = pieceData.startPosition;
-            // }
-            // else
-            // {
-            pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
-            _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
-            //}
-            
-            _spawnedPieces.Add(pieceGo);
+            _triangleNeighborService.FindNeighbors(_allTriangles);
+            DrawLoadedPieces(levelData);
         }
-        
-        _levelCompletionController.SetLevelTarget(_spawnedPieces.Count);
-    }
     
-    public void Clear()
-    {
-        if (_spawnedPieces is { Count: > 0 })
+        private void DrawLoadedPieces(LevelData levelData)
         {
-            foreach (var piece in _spawnedPieces)
+            for (int i = 0; i < _pieces.Count; i++)
             {
-                Object.Destroy(piece.gameObject);
-            }    
-        }
+                global::Core.Piece.Scripts.Data.Piece piece = _pieces[i];
+                Mesh mesh = piece.CreateMesh();
+            
+                var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_pieceViewPrefab, _parentTransform);
+                pieceGo.name = "Piece_" + piece.ID;
+                mesh.name = "Piece_" + piece.ID + "_Mesh";
+            
+                pieceGo.SetPiece(piece.Triangles,_snapPoints);
+                pieceGo.SetMesh(mesh);
+
+                PieceData pieceData = levelData.Pieces.Find(p => p.pieceId == piece.ID);
+                // if (pieceData != null)
+                // {
+                //     pieceGo.transform.position = pieceData.startPosition;
+                // }
+                // else
+                // {
+                pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
+                _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
+                //}
+            
+                _spawnedPieces.Add(pieceGo);
+            }
         
-        _allTriangles.Clear();
-        _pieces.Clear();
-        _spawnedPieces.Clear();
+            _levelCompletionController.SetLevelTarget(_spawnedPieces.Count);
+        }
+    
+        public void Clear()
+        {
+            if (_spawnedPieces is { Count: > 0 })
+            {
+                foreach (var piece in _spawnedPieces)
+                {
+                    Object.Destroy(piece.gameObject);
+                }    
+            }
+        
+            _allTriangles.Clear();
+            _pieces.Clear();
+            _spawnedPieces.Clear();
+        }
     }
 }
