@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-
 public class PieceBuilder : IPieceBuilder
 {
     private PieceView _pieceViewPrefab;
@@ -12,15 +11,16 @@ public class PieceBuilder : IPieceBuilder
     private IPieceSpawnPositionController _pieceSpawnPositionController;
     private IPieceFactory _pieceFactory;
     private IPieceSaverService _pieceSaverService;
+    private ILevelCompletionController _levelCompletionController;
     
-    [Inject]
-    private void Construct(IInstantiator instantiator, IPieceSpawnPositionController pieceSpawnPositionService, IPieceFactory pieceFactory,
-        PieceView pieceViewPrefab, Transform pieceViewParent, IPieceSaverService ıPieceSaverService)
+    public PieceBuilder(IInstantiator instantiator, IPieceSpawnPositionController pieceSpawnPositionService, IPieceFactory pieceFactory,
+        PieceView pieceViewPrefab, Transform pieceViewParent, IPieceSaverService pieceSaverService, ILevelCompletionController levelCompletionController)
     {
         _instantiator = instantiator;    
         _pieceSpawnPositionController = pieceSpawnPositionService;
         _pieceFactory = pieceFactory;
-        _pieceSaverService = ıPieceSaverService;
+        _pieceSaverService = pieceSaverService;
+        _levelCompletionController = levelCompletionController;
 
         _pieceViewPrefab = pieceViewPrefab;
         _pieceViewParent = pieceViewParent;
@@ -51,25 +51,16 @@ public class PieceBuilder : IPieceBuilder
             pieceGo.SetMesh(mesh);
             
             pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
+            _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
             spawnedPieces.Add(pieceGo);
         }
         
         _pieceSaverService.SavePieceData(spawnedPieces, pieces,snapPoints);
+        _levelCompletionController.SetLevelTarget(spawnedPieces.Count);
     }
 
     public void Clear()
     {
         _pieceSaverService.Clear();
     }
-
-    // void OnDrawGizmos()
-    // {
-    //     if (_snapPoints == null || _snapPoints.Count == 0) return;
-    //     
-    //     Gizmos.color = Color.red;
-    //     foreach (var point in _snapPoints)
-    //     {
-    //         Gizmos.DrawWireSphere(point, 0.15f);
-    //     }
-    // }
 }

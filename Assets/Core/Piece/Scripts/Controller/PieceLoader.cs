@@ -14,10 +14,11 @@ public class PieceLoader : IPieceLoader
     
     private ITriangleNeighborService _triangleNeighborService;
     private IPieceSpawnPositionController _pieceSpawnPositionController;
+    private ILevelCompletionController _levelCompletionController;
     private IInstantiator _instantiator;
 
     public PieceLoader(IInstantiator instantiator,IPieceSpawnPositionController pieceSpawnPositionController,
-        PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService)
+        PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService, ILevelCompletionController levelCompletionController)
     {
         _triangleNeighborService = triangleNeighborService;
         _instantiator = instantiator;
@@ -25,13 +26,15 @@ public class PieceLoader : IPieceLoader
         
         _parentTransform = parentTransform;
         _pieceViewPrefab = pieceViewPrefab;
+        
+        _levelCompletionController = levelCompletionController;
     }
     
     public void LoadFromLevelData(LevelData levelData)
     {
-        _snapPoints = new List<Vector3>(levelData.snapPoints);
+        _snapPoints = new List<Vector3>(levelData.SnapPoints);
         
-        foreach (var pieceData in levelData.pieces)
+        foreach (var pieceData in levelData.Pieces)
         {
             Piece piece = new Piece(pieceData.pieceId);
             
@@ -48,22 +51,7 @@ public class PieceLoader : IPieceLoader
         _triangleNeighborService.FindNeighbors(_allTriangles);
         DrawLoadedPieces(levelData);
     }
-
-    public void Clear()
-    {
-        if (_spawnedPieces is { Count: > 0 })
-        {
-            foreach (var piece in _spawnedPieces)
-            {
-                Object.Destroy(piece.gameObject);
-            }    
-        }
-        
-        _allTriangles.Clear();
-        _pieces.Clear();
-        _spawnedPieces.Clear();
-    }
-
+    
     private void DrawLoadedPieces(LevelData levelData)
     {
         for (int i = 0; i < _pieces.Count; i++)
@@ -78,28 +66,35 @@ public class PieceLoader : IPieceLoader
             pieceGo.SetPiece(piece.Triangles,_snapPoints);
             pieceGo.SetMesh(mesh);
 
-            PieceData pieceData = levelData.pieces.Find(p => p.pieceId == piece.ID);
-            if (pieceData != null)
-            {
-                pieceGo.transform.position = pieceData.startPosition;
-            }
-            else
-            {
-                pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
-            }
+            PieceData pieceData = levelData.Pieces.Find(p => p.pieceId == piece.ID);
+            // if (pieceData != null)
+            // {
+            //     pieceGo.transform.position = pieceData.startPosition;
+            // }
+            // else
+            // {
+            pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
+            _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
+            //}
             
             _spawnedPieces.Add(pieceGo);
         }
+        
+        _levelCompletionController.SetLevelTarget(_spawnedPieces.Count);
     }
     
-    // void OnDrawGizmos()
-    // {
-    //     if (_snapPoints == null || _snapPoints.Count == 0) return;
-    //     
-    //     Gizmos.color = Color.red;
-    //     foreach (var point in _snapPoints)
-    //     {
-    //         Gizmos.DrawWireSphere(point, 0.15f);
-    //     }
-    // }
+    public void Clear()
+    {
+        if (_spawnedPieces is { Count: > 0 })
+        {
+            foreach (var piece in _spawnedPieces)
+            {
+                Object.Destroy(piece.gameObject);
+            }    
+        }
+        
+        _allTriangles.Clear();
+        _pieces.Clear();
+        _spawnedPieces.Clear();
+    }
 }

@@ -1,62 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
-public class LevelController : MonoBehaviour
+
+public class LevelController : ILevelController
 {
-    private IPieceSpawnPositionController _pieceSpawnPositionController;
-    private ILevelPersistenceService _levelPersistenceService;
-    private IGridController _gridController;
-    private IPieceLoader _pieceLoader;
-    private IPieceBuilder _pieceBuilder;
-    private IPieceSaverService _pieceSaverService;
+    private string _saveLevelName = "Level_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
     
-    [Inject]
-    private void Construct(IPieceSpawnPositionController pieceSpawnPositionService, ILevelPersistenceService levelPersistenceService,
-        IGridController gridController, IPieceFactory pieceFactory, IPieceLoader pieceLoader,
-        IPieceBuilder pieceBuilder, IPieceSaverService ıPieceSaverService)
+    private readonly IPieceSpawnPositionController _pieceSpawnPositionController;
+    private readonly ILevelPersistenceService _levelPersistenceService;
+    private readonly IGridController _gridController;
+    private readonly IPieceLoader _pieceLoader;
+    private readonly IPieceBuilder _pieceBuilder;
+    private readonly IPieceSaverService _pieceSaverService;
+    
+    public LevelController(IPieceSpawnPositionController pieceSpawnPositionService, ILevelPersistenceService levelPersistenceService,
+        IGridController gridController, IPieceLoader pieceLoader, IPieceBuilder pieceBuilder,
+        IPieceSaverService pieceSaverService)
     {
         _pieceSpawnPositionController = pieceSpawnPositionService;
         _levelPersistenceService = levelPersistenceService;
         _gridController = gridController;
         _pieceLoader = pieceLoader;
         _pieceBuilder = pieceBuilder;
-        _pieceSaverService = ıPieceSaverService;
+        _pieceSaverService = pieceSaverService;
     }
     
-    private void Update()
+    public void GenerateNewLevel()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            SaveLevel("Level_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-        }
-        
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            string lastLevel = _levelPersistenceService.GetLastPlayedLevel();
-            
-            if (!string.IsNullOrEmpty(lastLevel))
-            {
-                LoadLevel(lastLevel);
-            }
-            else
-            {
-                Debug.LogWarning("No previously saved level found!");
-            }
-        }
-        
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            GenerateNewLevel();
-        }
+        LevelClear();
+        _pieceBuilder.GenerateNewPiece();
     }
     
-    private void SaveLevel(string levelName)
+    public void SaveLevel()
     {
         LevelData levelData = new LevelData
         {
-            gridSize = _gridController.GetGridSize(),
-            snapPoints = new List<Vector3>(_pieceSaverService.GetSnapPoints())
+            GridSize = _gridController.GetGridSize(),
+            SnapPoints = new List<Vector3>(_pieceSaverService.GetSnapPoints())
         };
         
         var pieces = _pieceSaverService.GetPieces();
@@ -84,34 +64,32 @@ public class LevelController : MonoBehaviour
                 }
             }
             
-            levelData.pieces.Add(pieceData);
+            levelData.Pieces.Add(pieceData);
         }
         
-        _levelPersistenceService.SaveLevel(levelData, levelName);
-        _levelPersistenceService.SaveLastPlayedLevel(levelName);
+        _levelPersistenceService.SaveLevel(levelData, _saveLevelName);
+        _levelPersistenceService.SaveLastPlayedLevel(_saveLevelName);
     }
     
-    private void LoadLevel(string levelName)
+    public void LoadLevel()
     {
-        LevelData levelData = _levelPersistenceService.LoadLevel(levelName);
+        string lastLevel = _levelPersistenceService.GetLastPlayedLevel();
+        LevelData levelData = _levelPersistenceService.LoadLevel(lastLevel);
         
         if (levelData == null)
         {
-            Debug.LogError($"Failed to load level: {levelName}");
+            Debug.LogError($"Failed to load level: {lastLevel}");
             return;
         }
-        
-        _pieceBuilder.Clear();
-        _pieceLoader.Clear();
+
+        LevelClear();
         _pieceLoader.LoadFromLevelData(levelData);
-        
-        _levelPersistenceService.SaveLastPlayedLevel(levelName);
+        _levelPersistenceService.SaveLastPlayedLevel(lastLevel);
     }
     
-    private void GenerateNewLevel()
+    private void LevelClear()
     {
         _pieceBuilder.Clear();
         _pieceLoader.Clear();
-        _pieceBuilder.GenerateNewPiece();
     }
 }

@@ -5,13 +5,14 @@ using UnityEngine;
 [Serializable]
 public class LevelData
 {
-    public int gridSize;
-    public List<PieceData> pieces;
-    public List<Vector3> snapPoints;
+    public int GridSize;
+    public List<PieceData> Pieces;
+    public List<Vector3> SnapPoints;
+    public GameDifficultySOData GameDifficulty;
     
     public LevelData()
     {
-        pieces = new List<PieceData>();
-        snapPoints = new List<Vector3>();
+        Pieces = new List<PieceData>();
+        SnapPoints = new List<Vector3>();
     }
 }

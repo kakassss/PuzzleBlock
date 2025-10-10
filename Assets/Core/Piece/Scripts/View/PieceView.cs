@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -14,22 +15,26 @@ public class PieceView : MonoBehaviour
     
     private Material _instanceMaterial;
     private bool _isDragging = false;
+    private bool _isPlacedOnGrid = false;
     private List<Vector3> _snapPoints;
  
-    private IPieceZOrderController _ıPieceZOrderController;
+    private IPieceZOrderController _pieceZOrderController;
     private IPieceCenterController _pieceCenterController;
     private IPieceMouseInputHandler _pieceMouseInputHandler;
     private IPiecePlacementController _piecePlacementController;
     private IPieceSnapController _pieceSnapService;
+    private ILevelCompletionController _levelCompletionController;
     private DiContainer _diContainer;
     
     [Inject]
-    private void Construct(DiContainer diContainer, IPieceMouseInputHandler pieceMouseInputHandler, IPieceZOrderController ıPieceZOrderController)
+    private void Construct(DiContainer diContainer, IPieceMouseInputHandler pieceMouseInputHandler, IPieceZOrderController pieceZOrderController,
+        ILevelCompletionController levelCompletionController)
     {
         _diContainer = diContainer;
         _pieceMouseInputHandler = pieceMouseInputHandler;
-        _ıPieceZOrderController = ıPieceZOrderController;
-        
+        _pieceZOrderController = pieceZOrderController;
+            
+        _levelCompletionController = levelCompletionController;
         Instantiate();
     }
 
@@ -49,7 +54,7 @@ public class PieceView : MonoBehaviour
     {
         _allTriangles = alltriangles;
         _snapPoints = snapPoints;
-        CalculatePieceCenter();
+        _pieceCenterController.CalculatePieceCenter(_allTriangles);
         
         Initialize();
     }
@@ -71,18 +76,13 @@ public class PieceView : MonoBehaviour
         _piecePlacementController.Initialize(_allTriangles,centerPosition);
     }
     
-    private void CalculatePieceCenter()
-    {
-        _pieceCenterController.CalculatePieceCenter(_allTriangles);
-    }
-    
     private void OnMouseDown()
     {
         _isDragging = true;
         _piecePlacementController.ClearFromGrid();
         
-        CalculatePieceCenter();
-        _ıPieceZOrderController.BringToFront(transform);
+        //CalculatePieceCenter();
+        _pieceZOrderController.BringToFront(transform);
         
         _pieceMouseInputHandler.HandleMouseDown(transform);
     }
@@ -101,6 +101,12 @@ public class PieceView : MonoBehaviour
         
         Vector3? bestSnapPos = _pieceSnapService.FindBestSnapPosition(transform);
     
+        if (_isPlacedOnGrid)
+        {
+            _levelCompletionController.RegisterPiecePlacement(false);
+            _isPlacedOnGrid = false;
+        }
+        
         if (bestSnapPos.HasValue)
         {
             transform.position = bestSnapPos.Value;
@@ -109,8 +115,55 @@ public class PieceView : MonoBehaviour
             {
                 _pieceMouseInputHandler.HandleMouseUp(transform);
             }
+            else
+            {
+                _isPlacedOnGrid = true;
+                _levelCompletionController.RegisterPiecePlacement(true);
+            }
         }
     }
+    
+    
+    // private void HandlePieceRelease()
+    // {
+    //     Vector3? bestSnapPos = _pieceSnapService.FindBestSnapPosition(transform);
+    //     if (!bestSnapPos.HasValue)
+    //         return;
+    //
+    //     SnapToPosition(bestSnapPos.Value);
+    //     TryPlacePieceOnGrid();
+    // }
+    //
+    // private void SnapToPosition(Vector3 snapPosition)
+    // {
+    //     transform.position = snapPosition;
+    // }
+    //
+    // private void TryPlacePieceOnGrid()
+    // {
+    //     bool placed = _piecePlacementController.TryPlaceOnGrid(transform);
+    //     if (placed)
+    //         HandleSuccessfulPlacement();
+    //     else
+    //         HandleFailedPlacement();
+    // }
+    //
+    // private void HandleSuccessfulPlacement()
+    // {
+    //     _isPlacedOnGrid = true;
+    //     _levelCompletionController.RegisterPiecePlacement(true);
+    // }
+    //
+    // private void HandleFailedPlacement()
+    // {
+    //     _pieceMouseInputHandler.HandleMouseUp(transform);
+    //
+    //     if (_isPlacedOnGrid)
+    //     {
+    //         _levelCompletionController.RegisterPiecePlacement(false);
+    //         _isPlacedOnGrid = false;
+    //     }
+    // }
     
     private void OnDrawGizmos()
     {

@@ -13,14 +13,19 @@ public class PieceFactory : IPieceFactory
     
     private IGridController _gridController;
     private ITriangleNeighborService _triangleNeighborService;
+    private IGameDifficultyController _gameDifficultyController;
     
     private int _pieceCount;
     
-    public PieceFactory(IGridController gridController,ITriangleNeighborService triangleNeighborService, int pieceCount)
+    public PieceFactory(IGridController gridController,ITriangleNeighborService triangleNeighborService,
+        IGameDifficultyController gameDifficultyController)
     {
         _gridController = gridController;
         _triangleNeighborService = triangleNeighborService;
-        _pieceCount = pieceCount;
+        _gameDifficultyController = gameDifficultyController;
+        
+        var gameDifficulty = _gameDifficultyController.GetDifficultyData();
+        _pieceCount = gameDifficulty.PieceAmount;
     }
 
     public void GeneratePiece()

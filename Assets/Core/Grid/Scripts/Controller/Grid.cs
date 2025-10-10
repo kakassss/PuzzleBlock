@@ -5,21 +5,24 @@ using UnityEngine;
 public class Grid : IGridController
 {
     public List<TriangleCell> GetAllTriangleCells() => _allTriangles;
-
     
     private const int GRID_SIZE_OFFSET = 1;
     
     private readonly int _gridSize;
-    private readonly float _cellSize;
+    private readonly float _cellSize = 1;
     private readonly GridCell[,] _gridArray;
     private readonly List<Vector3> _cellVisualPosition;
     private readonly List<Vector3> _centerPos;
     private readonly List<TriangleCell> _allTriangles = new List<TriangleCell>();
     
-    public Grid(int gridSize, float cellSize)
+    private IGameDifficultyController _gameDifficultyController;
+    
+    public Grid(IGameDifficultyController gameDifficultyController)
     {
-        _gridSize = gridSize;
-        _cellSize = cellSize;
+        _gameDifficultyController = gameDifficultyController;
+        var gameDifficulty = _gameDifficultyController.GetDifficultyData();
+        
+        _gridSize = gameDifficulty.GridSize;
         _cellVisualPosition = new List<Vector3>();
         _centerPos = new List<Vector3>();
         _gridArray = new GridCell[_gridSize, _gridSize];

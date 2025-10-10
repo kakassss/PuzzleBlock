@@ -27,7 +27,7 @@ public class PieceSnapController : IPieceSnapController
         
         float bestDistance = float.MaxValue;
         Vector3? bestPosition = null;
-        float snapThreshold = 0.5f;
+        float snapThreshold = 1f;
 
         if (_pieceMouseInputHandler.MouseWorldPosInGrid() == false) return bestPosition;
         
