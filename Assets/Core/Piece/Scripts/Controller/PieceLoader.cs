@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using Core.Level.Controller;
 using Core.Level.Data;
 using Core.Piece.Scripts.Controller.Interfaces;
 using Core.Piece.Scripts.Data;
 using Core.Piece.Scripts.View;
 using UnityEngine;
-using Zenject;
 
 namespace Core.Piece.Scripts.Controller
 {
@@ -20,21 +18,17 @@ namespace Core.Piece.Scripts.Controller
         private PieceView _pieceViewPrefab;
     
         private ITriangleNeighborService _triangleNeighborService;
-        private IPieceSpawnPositionController _pieceSpawnPositionController;
-        private ILevelCompletionController _levelCompletionController;
-        private IInstantiator _instantiator;
+        private IPieceDrawer _pieceDrawer;
 
-        public PieceLoader(IInstantiator instantiator,IPieceSpawnPositionController pieceSpawnPositionController,
-            PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService, ILevelCompletionController levelCompletionController)
+        public PieceLoader(PieceView pieceViewPrefab,Transform parentTransform,ITriangleNeighborService triangleNeighborService,
+             IPieceDrawer pieceDrawer)
         {
             _triangleNeighborService = triangleNeighborService;
-            _instantiator = instantiator;
-            _pieceSpawnPositionController = pieceSpawnPositionController;
+            _pieceDrawer = pieceDrawer;
         
             _parentTransform = parentTransform;
             _pieceViewPrefab = pieceViewPrefab;
         
-            _levelCompletionController = levelCompletionController;
         }
     
         public void LoadFromLevelData(LevelData levelData)
@@ -56,32 +50,14 @@ namespace Core.Piece.Scripts.Controller
             }
         
             _triangleNeighborService.FindNeighbors(_allTriangles);
-            DrawLoadedPieces(levelData);
+            DrawLoadedPieces();
         }
-    
-        private void DrawLoadedPieces(LevelData levelData)
-        {
-            for (int i = 0; i < _pieces.Count; i++)
-            {
-                Data.Piece piece = _pieces[i];
-                Mesh mesh = piece.CreateMesh();
-            
-                var pieceGo = _instantiator.InstantiatePrefabForComponent<PieceView>(_pieceViewPrefab, _parentTransform);
-                pieceGo.name = "Piece_" + piece.ID;
-                mesh.name = "Piece_" + piece.ID + "_Mesh";
-            
-                pieceGo.SetPiece(piece.Triangles,_snapPoints);
-                pieceGo.SetMesh(mesh);
-                
-                pieceGo.transform.position = _pieceSpawnPositionController.GetSpawnPosition();
-                _pieceSpawnPositionController.PieceMovementTween(pieceGo.transform);
-                
-                _spawnedPieces.Add(pieceGo);
-            }
         
-            _levelCompletionController.SetLevelTarget(_spawnedPieces.Count);
+        private void DrawLoadedPieces()
+        {
+            _spawnedPieces = _pieceDrawer.DrawPieces(_pieces, _snapPoints,_pieceViewPrefab, _parentTransform);
         }
-    
+        
         public void Clear()
         {
             if (_spawnedPieces is { Count: > 0 })
